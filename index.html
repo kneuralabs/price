@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>KNEURAPRICE</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500&family=Inter:wght@300;400;500;600;700&display=swap');
@@ -13,15 +13,23 @@
   --hi:#2d4fff;--gold:#b8860b;
   --mono:'JetBrains Mono',monospace;--sans:'Inter',sans-serif;
   --r:2px;--nav:52px;
+  --navbg:rgba(255,255,255,.97);--ink:#141410;
   --ease:cubic-bezier(.16,1,.3,1);
 }
+html.dark{
+  --bg:#0d0d0c;--bg1:#161614;--bg2:#1e1e1b;--bg3:#262622;
+  --border:#2d2d29;--border2:#403f3a;
+  --text:#f1f0ea;--text2:#bdbcb4;--text3:#8c8b84;
+  --hi:#7e93ff;--gold:#d9a93c;
+  --navbg:rgba(13,13,12,.95);--ink:#000000;
+}
 *{box-sizing:border-box;margin:0;padding:0}
-html{font-size:17px}
+html{font-size:17px;background:var(--bg);transition:background .25s}
 html,body{height:100%;overflow:hidden}
 body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:15px;line-height:1.65}
 
 /* NAV */
-nav{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(255,255,255,.97);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);height:var(--nav)}
+nav{position:fixed;top:0;left:0;right:0;z-index:200;background:var(--navbg);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);height:var(--nav)}
 .nav-inner{max-width:1360px;margin:auto;display:flex;align-items:center;height:100%;padding:0 clamp(1rem,3vw,2.5rem)}
 .logo{display:flex;align-items:center;gap:.55rem;font-family:var(--sans);font-weight:700;font-size:.95rem;letter-spacing:.01em;color:var(--text);padding-right:1.5rem;border-right:1px solid var(--border);flex-shrink:0}
 .logo em{font-style:normal;color:var(--hi)}
@@ -48,7 +56,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(255,255,255,
 .pg-sub{font-family:var(--mono);font-size:.56rem;color:var(--text3);margin-left:auto;letter-spacing:.04em}
 
 /* 01 INSTRUCTIONS */
-.intro-hero{background:var(--text);color:#fff;padding:2.25rem 2rem;display:flex;align-items:flex-end;justify-content:space-between;gap:2rem;flex-wrap:wrap;margin-bottom:1px}
+.intro-hero{background:var(--ink);color:#fff;padding:2.25rem 2rem;display:flex;align-items:flex-end;justify-content:space-between;gap:2rem;flex-wrap:wrap;margin-bottom:1px}
 .intro-hero-title{font-size:clamp(1.5rem,4vw,2.3rem);font-weight:700;letter-spacing:-.03em;line-height:1.1}
 .intro-hero-title span{color:rgba(255,255,255,.3)}
 .intro-hero-meta{font-family:var(--mono);font-size:.6rem;color:rgba(255,255,255,.38);line-height:2.1}
@@ -69,7 +77,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(255,255,255,
 .intro-note-label{font-family:var(--mono);font-size:.54rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text3);flex-shrink:0;padding-top:.12rem}
 .intro-note-text{font-size:.76rem;color:var(--text2);line-height:1.65}
 .intro-cta{display:flex;gap:.75rem;flex-wrap:wrap}
-.btn-primary{font-family:var(--mono);font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;padding:.6rem 1.35rem;background:var(--text);color:#fff;border:none;cursor:pointer;border-radius:var(--r);transition:opacity .18s}
+.btn-primary{font-family:var(--mono);font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;padding:.6rem 1.35rem;background:var(--ink);color:#fff;border:none;cursor:pointer;border-radius:var(--r);transition:opacity .18s}
 .btn-primary:hover{opacity:.8}
 .btn-outline{font-family:var(--mono);font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;padding:.6rem 1.35rem;background:transparent;color:var(--text2);border:1px solid var(--border2);cursor:pointer;border-radius:var(--r);transition:all .18s}
 .btn-outline:hover{color:var(--text);border-color:var(--text)}
@@ -161,7 +169,7 @@ input[type=range].ctrl-sl{flex:1;accent-color:var(--text);cursor:pointer;height:
 .br-sep{border-top:1px solid var(--border);margin:.4rem 0 .45rem}
 .br-tot{display:flex;justify-content:space-between;font-family:var(--mono);font-size:.68rem}
 .br-tot-lbl{color:var(--text2)}.br-tot-val{color:var(--text);font-weight:500}
-.final-box{border:1px solid var(--text);background:var(--text);padding:1.5rem 1.25rem}
+.final-box{border:1px solid var(--ink);background:var(--ink);padding:1.5rem 1.25rem}
 .final-lbl{font-family:var(--mono);font-size:.56rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.38);margin-bottom:.5rem}
 .final-price{font-family:var(--mono);font-size:2.6rem;font-weight:500;color:#fff;letter-spacing:-.04em;line-height:1}
 .final-sub{display:flex;flex-wrap:wrap;gap:.35rem 1rem;margin-top:.75rem}
@@ -198,24 +206,51 @@ input[type=range].ctrl-sl{flex:1;accent-color:var(--text);cursor:pointer;height:
 @media(max-width:900px){#pg3 .qb-grid{grid-template-columns:1fr}}
 
 /* DOT INDICATOR */
-.pg-dots{position:fixed;bottom:1.1rem;right:1.1rem;display:flex;flex-direction:column;gap:5px;z-index:100}
-.pg-dot{width:5px;height:5px;border-radius:50%;background:var(--border2);cursor:pointer;transition:background .2s,transform .2s}
+.pg-dots{position:fixed;bottom:calc(3.7rem + env(safe-area-inset-bottom,0px));right:calc(1.25rem + env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:5px;z-index:100}
+.pg-dot{width:6px;height:6px;border-radius:50%;background:var(--border2);cursor:pointer;transition:background .2s,transform .2s}
 .pg-dot.active{background:var(--text);transform:scale(1.5)}
+
+/* THEME TOGGLE */
+.theme-tgl{position:fixed;bottom:calc(1.1rem + env(safe-area-inset-bottom,0px));right:calc(1.1rem + env(safe-area-inset-right,0px));z-index:210;width:42px;height:42px;border-radius:50%;border:1px solid var(--border2);background:var(--bg1);color:var(--text);font-size:1.05rem;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 12px rgba(0,0,0,.16);transition:background .2s,color .2s,transform .15s,border-color .2s}
+.theme-tgl:hover{transform:scale(1.08);border-color:var(--text3)}
+.theme-tgl:active{transform:scale(.96)}
 
 /* NAV BOTTOM (mobile) */
 .pg-nav-row{display:flex;gap:.6rem;margin-top:1.25rem;flex-wrap:wrap}
 
 /* RESPONSIVE */
+@media(max-width:1024px){
+  .qb-grid,#pg3 .qb-grid{grid-template-columns:1fr}
+}
+@media(max-width:768px){
+  :root{--nav:48px}
+  .pg-inner{padding:1.25rem 1rem 2.5rem}
+  .intro-hero{flex-direction:column;align-items:flex-start;gap:1rem;padding:1.6rem 1.4rem}
+  .intro-steps,.intro-cards{grid-template-columns:1fr}
+  #pg3 .sum-grid{grid-template-columns:1fr 1fr}
+  .final-price,#pg3 .final-price{font-size:2rem}
+}
 @media(max-width:600px){
   .badge{display:none}
   .pg-sub{display:none}
-  .final-price{font-size:2rem}
   .qb-mod-table th.hs,.qb-mod-table td.hs{display:none}
+  .rate-table th:nth-child(5),.rate-table td:nth-child(5){display:none}
+  .nav-tab{padding:0 .7rem;font-size:.58rem}
+  #pg3 .ctrl-grid{grid-template-columns:1fr}
+  .logo span{font-size:.85rem}
+  .pg-title{font-size:1rem}
 }
-@media(max-width:480px){
-  .rate-table th:nth-child(4),.rate-table td:nth-child(4){display:none}
-  .nav-tab{padding:0 .7rem}
-  .intro-hero{padding:1.4rem}
+@media(max-width:420px){
+  .nav-tab .tnum{display:none}
+  .logo-img{height:25px}
+  .pg-head{margin-bottom:1rem}
+  .theme-tgl{width:38px;height:38px;font-size:.95rem}
+}
+@media(max-height:480px) and (orientation:landscape){
+  :root{--nav:44px}
+  .pg-inner{padding:.85rem 1rem 1.75rem}
+  .pg-head{margin-bottom:.7rem;padding-bottom:.55rem}
+  .intro-hero{padding:1.1rem 1.3rem}
 }
 @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
@@ -440,6 +475,8 @@ input[type=range].ctrl-sl{flex:1;accent-color:var(--text);cursor:pointer;height:
   </div>
 
 </div><!-- /page-wrap -->
+
+<button class="theme-tgl" id="themeTgl" type="button" aria-label="Toggle dark mode" title="Toggle dark / light">☾</button>
 
 <div class="pg-dots">
   <div class="pg-dot active" onclick="showPage(0)" title="01 Instructions"></div>
@@ -672,6 +709,22 @@ function exportQ(){
 
 buildMatrix();
 recalc();
+
+/* THEME TOGGLE */
+(function(){
+  const tgl=document.getElementById('themeTgl'),root=document.documentElement;
+  function apply(dark){
+    root.classList.toggle('dark',dark);
+    tgl.textContent=dark?'☀':'☾';
+    tgl.setAttribute('aria-pressed',dark);
+    try{localStorage.setItem('kp-theme',dark?'dark':'light')}catch(e){}
+  }
+  let saved=null;
+  try{saved=localStorage.getItem('kp-theme')}catch(e){}
+  const prefersDark=window.matchMedia&&window.matchMedia('(prefers-color-scheme:dark)').matches;
+  apply(saved?saved==='dark':prefersDark);
+  tgl.addEventListener('click',()=>apply(!root.classList.contains('dark')));
+})();
 </script>
 </body>
 </html>
