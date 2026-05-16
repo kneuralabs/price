@@ -168,6 +168,33 @@ input[type=range].ctrl-sl{flex:1;accent-color:var(--text);cursor:pointer;height:
 .exp-btn{width:100%;margin-top:1rem;font-family:var(--mono);font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;padding:.65rem;border:1px solid rgba(255,255,255,.22);background:transparent;color:rgba(255,255,255,.62);cursor:pointer;transition:all .2s;border-radius:var(--r)}
 .exp-btn:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.45);color:#fff}
 
+/* 04 SINGLE-SCREEN LAYOUT */
+#pg3 .pg-inner{padding-top:1rem;padding-bottom:1rem}
+#pg3 .pg-head{margin-bottom:.7rem;padding-bottom:.55rem}
+#pg3 .qb-grid{grid-template-columns:1fr 380px;gap:1rem;align-items:start}
+#pg3 .qb-mod-table th{padding:.34rem .7rem}
+#pg3 .qb-mod-table td{padding:.28rem .7rem}
+#pg3 .qm-name{font-size:.72rem}
+#pg3 .qb-panel{gap:.6rem}
+#pg3 .pbox{padding:.7rem .85rem}
+#pg3 .pbox-lbl{margin-bottom:.55rem;padding-bottom:.4rem}
+#pg3 .ctrl-grid{display:grid;grid-template-columns:1fr 1fr;gap:.5rem .9rem}
+#pg3 .ctrl-grid .ctrl-row{margin-bottom:0}
+#pg3 .ctrl-lbl{min-width:48px;font-size:.58rem}
+#pg3 .ctrl-out{font-size:.7rem;min-width:34px}
+#pg3 .sum-grid{grid-template-columns:repeat(4,1fr)}
+#pg3 .sum-card{padding:.55rem .55rem}
+#pg3 .sum-val{font-size:.95rem}
+#pg3 .sum-lbl{font-size:.46rem;margin-top:.22rem;letter-spacing:.08em}
+#pg3 .br-row{font-size:.6rem;margin-bottom:.1rem;padding:.06rem 0}
+#pg3 .br-sep{margin:.3rem 0 .32rem}
+#pg3 .br-tot{font-size:.64rem}
+#pg3 .final-box{padding:1rem}
+#pg3 .final-price{font-size:2rem}
+#pg3 .final-sub{margin-top:.5rem}
+#pg3 .exp-btn{margin-top:.7rem;padding:.55rem}
+@media(max-width:900px){#pg3 .qb-grid{grid-template-columns:1fr}}
+
 /* DOT INDICATOR */
 .pg-dots{position:fixed;bottom:1.1rem;right:1.1rem;display:flex;flex-direction:column;gap:5px;z-index:100}
 .pg-dot{width:5px;height:5px;border-radius:50%;background:var(--border2);cursor:pointer;transition:background .2s,transform .2s}
@@ -356,6 +383,7 @@ input[type=range].ctrl-sl{flex:1;accent-color:var(--text);cursor:pointer;height:
         <div class="qb-panel">
           <div class="pbox">
             <div class="pbox-lbl">Controls</div>
+            <div class="ctrl-grid">
             <div class="ctrl-row">
               <span class="ctrl-lbl">Margin</span>
               <input type="range" class="ctrl-sl" id="marginSl" min="5" max="60" value="25" step="1">
@@ -390,6 +418,7 @@ input[type=range].ctrl-sl{flex:1;accent-color:var(--text);cursor:pointer;height:
               <span class="ctrl-lbl">Travel</span>
               <input type="range" class="ctrl-sl" id="travSl" min="0" max="50000" value="0" step="500">
               <output class="ctrl-out" id="travOut">$0</output>
+            </div>
             </div>
           </div>
           <div class="sum-grid" id="qbSum"></div>
