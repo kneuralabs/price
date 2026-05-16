@@ -30,7 +30,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:15
 
 /* NAV */
 nav{position:fixed;top:0;left:0;right:0;z-index:200;background:var(--navbg);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);height:var(--nav)}
-.nav-inner{max-width:1360px;margin:auto;display:flex;align-items:center;height:100%;padding:0 clamp(1rem,3vw,2.5rem)}
+.nav-inner{max-width:none;margin:auto;display:flex;align-items:center;height:100%;padding:0 clamp(1rem,3vw,2.75rem)}
 .logo{display:flex;align-items:center;gap:.55rem;font-family:var(--sans);font-weight:700;font-size:.95rem;letter-spacing:.01em;color:var(--text);padding-right:1.5rem;border-right:1px solid var(--border);flex-shrink:0}
 .logo em{font-style:normal;color:var(--hi)}
 .logo-img{height:30px;width:auto;display:block;flex-shrink:0}
@@ -47,7 +47,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;background:var(--navbg);back
 .pg{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;opacity:0;transform:translateX(24px);pointer-events:none;transition:opacity .3s var(--ease),transform .3s var(--ease);scrollbar-color:var(--border2) var(--bg);scrollbar-width:thin}
 .pg.active{opacity:1;transform:translateX(0);pointer-events:auto}
 .pg.exit{opacity:0;transform:translateX(-16px);pointer-events:none}
-.pg-inner{max-width:1360px;margin:auto;padding:clamp(1.5rem,3vw,2.25rem) clamp(1rem,3vw,2.5rem) 3rem}
+.pg-inner{max-width:none;margin:auto;padding:clamp(1.5rem,3vw,2.25rem) clamp(1rem,3vw,2.75rem) 3rem}
 
 /* PAGE HEADER */
 .pg-head{display:flex;align-items:baseline;flex-wrap:wrap;gap:.4rem 1rem;border-bottom:1px solid var(--border);padding-bottom:1rem;margin-bottom:1.5rem}
@@ -203,6 +203,36 @@ input[type=range].ctrl-sl{flex:1;accent-color:var(--text);cursor:pointer;height:
 #pg3 .final-price{font-size:2rem}
 #pg3 .final-sub{margin-top:.5rem}
 #pg3 .exp-btn{margin-top:.7rem;padding:.55rem}
+@media(min-width:1025px){
+  #pg3{overflow:hidden}
+  #pg3 .pg-inner{height:100%;display:flex;flex-direction:column;padding-top:clamp(1rem,2vh,1.6rem);padding-bottom:clamp(1rem,2vh,1.6rem)}
+  #pg3 .qb-grid{flex:1;min-height:0;align-items:stretch;grid-template-columns:1fr clamp(360px,26vw,470px);gap:clamp(1rem,1.6vw,1.9rem)}
+  #pg3 .qb-mod-table{height:100%}
+  #pg3 .qb-mod-table th{padding:clamp(.5rem,1vh,.95rem) 1rem;font-size:clamp(.56rem,1.05vh,.66rem)}
+  #pg3 .qb-mod-table td{padding:clamp(.4rem,.9vh,.85rem) 1rem}
+  #pg3 .qm-name{font-size:clamp(.78rem,1.5vh,1.08rem)}
+  #pg3 .qm-id{font-size:clamp(.58rem,1vh,.7rem)}
+  #pg3 .qm-r{font-size:clamp(.78rem,1.45vh,1.02rem)}
+  #pg3 .qb-panel{height:100%;gap:clamp(.55rem,1.5vh,1.15rem)}
+  #pg3 .pbox{padding:clamp(.8rem,1.7vh,1.35rem) clamp(1rem,1.3vw,1.45rem)}
+  #pg3 .pbox-lbl{font-size:clamp(.56rem,1.1vh,.66rem)}
+  #pg3 .ctrl-grid{gap:clamp(.5rem,1.4vh,1rem) .9rem}
+  #pg3 .ctrl-lbl{font-size:clamp(.6rem,1.15vh,.74rem);min-width:58px}
+  #pg3 .ctrl-out{font-size:clamp(.72rem,1.3vh,.92rem)}
+  #pg3 input[type=range].ctrl-sl{height:3px}
+  #pg3 .sum-card{padding:clamp(.6rem,1.7vh,1.25rem) .6rem}
+  #pg3 .sum-val{font-size:clamp(1rem,2.8vh,2.05rem)}
+  #pg3 .sum-lbl{font-size:clamp(.46rem,.95vh,.6rem)}
+  #pg3 .qb-break{flex:1;min-height:0;display:flex;flex-direction:column}
+  #pg3 .qb-break #qbBreak{flex:1;min-height:0;overflow:auto}
+  #pg3 .br-row{font-size:clamp(.62rem,1.35vh,.84rem)}
+  #pg3 .br-tot{font-size:clamp(.66rem,1.45vh,.9rem)}
+  #pg3 .final-box{padding:clamp(1rem,2.5vh,2rem) clamp(1rem,1.3vw,1.5rem)}
+  #pg3 .final-lbl{font-size:clamp(.56rem,1.1vh,.68rem)}
+  #pg3 .final-price{font-size:clamp(1.9rem,5.4vh,3.7rem)}
+  #pg3 .final-sub span{font-size:clamp(.58rem,1.1vh,.74rem)}
+  #pg3 .exp-btn{font-size:clamp(.58rem,1.1vh,.74rem);padding:clamp(.6rem,1.4vh,.95rem)}
+}
 @media(max-width:900px){#pg3 .qb-grid{grid-template-columns:1fr}}
 
 /* DOT INDICATOR */
@@ -459,7 +489,7 @@ input[type=range].ctrl-sl{flex:1;accent-color:var(--text);cursor:pointer;height:
             </div>
           </div>
           <div class="sum-grid" id="qbSum"></div>
-          <div class="pbox">
+          <div class="pbox qb-break">
             <div class="pbox-lbl">Cost by Role</div>
             <div id="qbBreak"></div>
           </div>
