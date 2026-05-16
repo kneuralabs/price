@@ -9,21 +9,23 @@
 :root{
   --bg:#ffffff;--bg1:#f8f8f7;--bg2:#f2f1ef;--bg3:#eae9e6;
   --border:#e5e4e0;--border2:#cccac4;
-  --text:#1a1a18;--text2:#6b6a66;--text3:#a8a7a2;
+  --text:#141410;--text2:#52514c;--text3:#807f79;
   --hi:#2d4fff;--gold:#b8860b;
   --mono:'JetBrains Mono',monospace;--sans:'Inter',sans-serif;
   --r:2px;--nav:52px;
   --ease:cubic-bezier(.16,1,.3,1);
 }
 *{box-sizing:border-box;margin:0;padding:0}
+html{font-size:17px}
 html,body{height:100%;overflow:hidden}
-body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:13px;line-height:1.6}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:15px;line-height:1.65}
 
 /* NAV */
 nav{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(255,255,255,.97);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);height:var(--nav)}
 .nav-inner{max-width:1360px;margin:auto;display:flex;align-items:center;height:100%;padding:0 clamp(1rem,3vw,2.5rem)}
-.logo{font-family:var(--mono);font-weight:500;font-size:.8rem;letter-spacing:.18em;color:var(--text);padding-right:1.75rem;border-right:1px solid var(--border);flex-shrink:0}
+.logo{display:flex;align-items:center;gap:.55rem;font-family:var(--sans);font-weight:700;font-size:.95rem;letter-spacing:.01em;color:var(--text);padding-right:1.5rem;border-right:1px solid var(--border);flex-shrink:0}
 .logo em{font-style:normal;color:var(--hi)}
+.logo-img{height:30px;width:auto;display:block;flex-shrink:0}
 .nav-tabs{display:flex;flex:1;height:100%;overflow-x:auto;scrollbar-width:none}
 .nav-tabs::-webkit-scrollbar{display:none}
 .nav-tab{display:flex;align-items:center;gap:.45rem;padding:0 1.1rem;height:100%;font-family:var(--mono);font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);cursor:pointer;border-right:1px solid var(--border);border-left:1px solid var(--border);margin-left:-1px;transition:color .18s,background .18s;white-space:nowrap;user-select:none}
@@ -222,7 +224,7 @@ input[type=range].ctrl-sl{flex:1;accent-color:var(--text);cursor:pointer;height:
 
 <nav>
   <div class="nav-inner">
-    <div class="logo">KNEURA<em>PRICE</em></div>
+    <div class="logo"><img src="LOGO.png" class="logo-img" alt="Kneura"><span>KNEURA<em>PRICE</em></span></div>
     <div class="nav-tabs">
       <div class="nav-tab active" data-pg="0"><span class="tnum">01</span>&nbsp;Instructions</div>
       <div class="nav-tab" data-pg="1"><span class="tnum">02</span>&nbsp;Rate Card</div>
