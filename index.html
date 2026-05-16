@@ -299,12 +299,13 @@ input[type=range].ctrl-sl{flex:1;accent-color:var(--text);cursor:pointer;height:
         <thead><tr>
           <th style="width:42px;text-align:center">On</th>
           <th>Role</th>
+          <th style="text-align:right;width:64px">FTE</th>
           <th style="text-align:right">Rate / hr</th>
           <th>Scope</th>
         </tr></thead>
         <tbody id="rateBody"></tbody>
         <tfoot><tr class="blended-foot">
-          <td colspan="2" style="font-family:var(--mono);font-size:.6rem;color:var(--text3);padding:.7rem 1rem">Blended average across all roles</td>
+          <td colspan="3" style="font-family:var(--mono);font-size:.6rem;color:var(--text3);padding:.7rem 1rem">Blended average across all roles</td>
           <td style="text-align:right;padding:.7rem 1rem"><span class="blended-val" id="blendedVal">—</span></td>
           <td style="font-family:var(--mono);font-size:.56rem;color:var(--text3);padding:.7rem 1rem">Actual mix varies by module</td>
         </tr></tfoot>
@@ -463,16 +464,19 @@ const rates=ROLES.map(r=>r.rate);
 const hrs=MODS.map(m=>[...m.h]);
 const active=new Set(MODS.map((_,i)=>i));
 const selRoles=new Set(ROLES.map((_,i)=>i));
+const fte=ROLES.map(()=>1);
 
 /* 02 RATE CARD */
 ROLES.forEach((r,i)=>{
   const tr=document.createElement('tr');
   tr.innerHTML=`<td style="text-align:center"><input type="checkbox" class="role-chk" id="rc${i}" checked style="accent-color:var(--text);cursor:pointer;width:15px;height:15px"></td>
     <td><div class="role-name">${r.name}</div><div class="role-note">${r.note}</div></td>
+    <td style="text-align:right"><input type="number" class="rate-inp" id="ft${i}" value="1" min="0" step="0.5" style="width:46px"></td>
     <td style="text-align:right"><div class="rate-input-cell"><span class="rate-pfx">$</span><input type="number" class="rate-inp" id="rt${i}" value="${r.rate}" min="0" step="5"><span class="rate-sfx">/ hr</span></div></td>
     <td style="font-family:var(--mono);font-size:.58rem;color:var(--text3)">${r.note}</td>`;
   document.getElementById('rateBody').appendChild(tr);
   document.getElementById('rt'+i).addEventListener('input',function(){rates[i]=parseFloat(this.value)||0;recalc();});
+  document.getElementById('ft'+i).addEventListener('input',function(){fte[i]=parseFloat(this.value)||0;recalc();});
   document.getElementById('rc'+i).addEventListener('change',function(){
     this.checked?selRoles.add(i):selRoles.delete(i);
     buildMatrix();recalc();
@@ -490,7 +494,7 @@ function buildMatrix(){
   const t=document.getElementById('mxTable');
   const cols=selCols();
   let h=`<thead><tr><th class="th-mod">Module</th>`;
-  cols.forEach(j=>h+=`<th title="${ROLES[j].name}">${ROLES[j].abbr}</th>`);
+  cols.forEach(j=>h+=`<th title="${ROLES[j].abbr}">${ROLES[j].name}</th>`);
   h+=`<th class="th-sum">Hrs</th><th class="th-sum">Int. Cost</th><th class="th-sum">Fee</th></tr></thead><tbody>`;
   MODS.forEach((m,i)=>{
     h+=`<tr><td class="td-mod"><div class="mod-id">${m.id}</div><div class="mod-name">${m.name}</div><div class="mod-dur">${m.dur}</div></td>`;
@@ -510,19 +514,19 @@ function buildMatrix(){
 function updateMatrix(){
   const mg=getMargin();let gH=0,gC=0;
   MODS.forEach((_,i)=>{
-    let mH=0,mC=0;selRoles.forEach(j=>{mH+=hrs[i][j];mC+=hrs[i][j]*rates[j];});
+    let mH=0,mC=0;selRoles.forEach(j=>{mH+=hrs[i][j]*fte[j];mC+=hrs[i][j]*fte[j]*rates[j];});
     gH+=mH;gC+=mC;const fee=mC/(1-mg);
-    document.getElementById('mH'+i).textContent=mH.toLocaleString()+'h';
+    document.getElementById('mH'+i).textContent=Math.round(mH).toLocaleString()+'h';
     document.getElementById('mC'+i).textContent='$'+Math.round(mC).toLocaleString();
     document.getElementById('mF'+i).textContent='$'+Math.round(fee).toLocaleString();
   });
   selRoles.forEach(j=>{
-    let cH=0,cC=0;MODS.forEach((_,i)=>{cH+=hrs[i][j];cC+=hrs[i][j]*rates[j];});
-    document.getElementById('cH'+j).textContent=cH+'h';
+    let cH=0,cC=0;MODS.forEach((_,i)=>{cH+=hrs[i][j]*fte[j];cC+=hrs[i][j]*fte[j]*rates[j];});
+    document.getElementById('cH'+j).textContent=Math.round(cH).toLocaleString()+'h';
     document.getElementById('cC'+j).textContent='$'+Math.round(cC/1000)+'K';
   });
   const gF=gC/(1-mg);
-  document.getElementById('gH').textContent=gH.toLocaleString()+'h';
+  document.getElementById('gH').textContent=Math.round(gH).toLocaleString()+'h';
   document.getElementById('gC').textContent='$'+Math.round(gC).toLocaleString();
   document.getElementById('gF').textContent='$'+Math.round(gF).toLocaleString();
 }
@@ -550,9 +554,9 @@ function updateMatrix(){
 })();
 function updateQBRows(){
   MODS.forEach((_,i)=>{
-    let mH=0,mC=0;selRoles.forEach(j=>{mH+=hrs[i][j];mC+=hrs[i][j]*rates[j];});
+    let mH=0,mC=0;selRoles.forEach(j=>{mH+=hrs[i][j]*fte[j];mC+=hrs[i][j]*fte[j]*rates[j];});
     const fee=mC/(1-getMargin());
-    document.getElementById('qH'+i).textContent=mH.toLocaleString()+'h';
+    document.getElementById('qH'+i).textContent=Math.round(mH).toLocaleString()+'h';
     document.getElementById('qC'+i).textContent='$'+Math.round(mC).toLocaleString();
     document.getElementById('qF'+i).textContent='$'+Math.round(fee).toLocaleString();
   });
@@ -563,7 +567,7 @@ function quoteCalc(){
   const cont=val('contSl')/100,comm=val('commSl')/100,vat=val('vatSl')/100;
   const saas=val('saasSl'),trav=val('travSl');
   let tH=0,tC=0;const rC=new Array(ROLES.length).fill(0);
-  active.forEach(i=>selRoles.forEach(j=>{tH+=hrs[i][j];tC+=hrs[i][j]*rates[j];rC[j]+=hrs[i][j]*rates[j];}));
+  active.forEach(i=>selRoles.forEach(j=>{tH+=hrs[i][j]*fte[j];tC+=hrs[i][j]*fte[j]*rates[j];rC[j]+=hrs[i][j]*fte[j]*rates[j];}));
   const fee=tC/(1-mg);
   const contAmt=fee*cont;
   const sub=fee+contAmt+saas+trav;
@@ -579,7 +583,7 @@ function updateQuote(){
   const q=quoteCalc();
   document.getElementById('qbSum').innerHTML=`
     <div class="sum-card"><span class="sum-val">${active.size}</span><div class="sum-lbl">Modules</div></div>
-    <div class="sum-card"><span class="sum-val">${q.tH.toLocaleString()}</span><div class="sum-lbl">Hours</div></div>
+    <div class="sum-card"><span class="sum-val">${Math.round(q.tH).toLocaleString()}</span><div class="sum-lbl">Hours</div></div>
     <div class="sum-card"><span class="sum-val">$${Math.round(q.tC/1000)}K</span><div class="sum-lbl">Int. Cost</div></div>
     <div class="sum-card"><span class="sum-val">$${q.eff.toFixed(0)}</span><div class="sum-lbl">Eff. $/hr</div></div>`;
   document.getElementById('qbBreak').innerHTML=
@@ -595,7 +599,7 @@ function updateQuote(){
     <span>Margin <strong>${(q.mg*100).toFixed(0)}%</strong></span>
     <span>Margin$ <strong>$${Math.round(q.mD).toLocaleString()}</strong></span>
     <span>Disc <strong>${(q.dc*100).toFixed(0)}%</strong></span>
-    <span>${q.tH.toLocaleString()} hrs</span>`;
+    <span>${Math.round(q.tH).toLocaleString()} hrs</span>`;
 }
 function getMargin(){return parseInt(document.getElementById('marginSl').value)/100}
 function getDiscount(){return parseInt(document.getElementById('discSl').value)/100}
@@ -612,14 +616,14 @@ function recalc(){updateBlended();updateMatrix();updateQBRows();updateQuote();}
 function exportQ(){
   const q=quoteCalc();
   const lines=['KNEURAPRICE — Custom Quote','='.repeat(52),'','RATE CARD (selected roles)'];
-  selCols().forEach(j=>lines.push(`  ${ROLES[j].abbr.padEnd(4)} ${ROLES[j].name.padEnd(34)} $${rates[j]}/hr`));
+  selCols().forEach(j=>lines.push(`  ${ROLES[j].abbr.padEnd(4)} ${ROLES[j].name.padEnd(34)} $${rates[j]}/hr  FTE ${fte[j]}`));
   lines.push('','SELECTED MODULES');
   active.forEach(i=>{
-    let mH=0,mC=0;selRoles.forEach(j=>{mH+=hrs[i][j];mC+=hrs[i][j]*rates[j];});
-    lines.push(`  ${MODS[i].id.padEnd(5)} ${MODS[i].name.padEnd(44)} ${String(mH+'h').padStart(6)}  $${Math.round(mC).toLocaleString()}`);
+    let mH=0,mC=0;selRoles.forEach(j=>{mH+=hrs[i][j]*fte[j];mC+=hrs[i][j]*fte[j]*rates[j];});
+    lines.push(`  ${MODS[i].id.padEnd(5)} ${MODS[i].name.padEnd(44)} ${String(Math.round(mH)+'h').padStart(6)}  $${Math.round(mC).toLocaleString()}`);
   });
   lines.push('','='.repeat(52),
-    `Hours:           ${q.tH.toLocaleString()}`,
+    `Hours:           ${Math.round(q.tH).toLocaleString()}`,
     `Internal Cost:   $${Math.round(q.tC).toLocaleString()}`,
     `Margin:          ${(q.mg*100).toFixed(0)}%`,
     `Contingency:     ${(q.cont*100).toFixed(0)}%  ($${Math.round(q.contAmt).toLocaleString()})`,
