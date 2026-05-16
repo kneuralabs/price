@@ -297,7 +297,7 @@ input[type=range].ctrl-sl{flex:1;accent-color:var(--text);cursor:pointer;height:
       </div>
       <table class="rate-table">
         <thead><tr>
-          <th style="width:32px"></th>
+          <th style="width:42px;text-align:center">On</th>
           <th>Role</th>
           <th style="text-align:right">Rate / hr</th>
           <th>Scope</th>
@@ -364,6 +364,31 @@ input[type=range].ctrl-sl{flex:1;accent-color:var(--text);cursor:pointer;height:
               <span class="ctrl-lbl">Discount</span>
               <input type="range" class="ctrl-sl" id="discSl" min="-25" max="25" value="0" step="1">
               <output class="ctrl-out" id="discOut">0%</output>
+            </div>
+            <div class="ctrl-row">
+              <span class="ctrl-lbl">Conting.</span>
+              <input type="range" class="ctrl-sl" id="contSl" min="0" max="25" value="0" step="1">
+              <output class="ctrl-out" id="contOut">0%</output>
+            </div>
+            <div class="ctrl-row">
+              <span class="ctrl-lbl">Sales Cm</span>
+              <input type="range" class="ctrl-sl" id="commSl" min="0" max="20" value="0" step="1">
+              <output class="ctrl-out" id="commOut">0%</output>
+            </div>
+            <div class="ctrl-row">
+              <span class="ctrl-lbl">VAT/GST</span>
+              <input type="range" class="ctrl-sl" id="vatSl" min="0" max="30" value="0" step="1">
+              <output class="ctrl-out" id="vatOut">0%</output>
+            </div>
+            <div class="ctrl-row">
+              <span class="ctrl-lbl">SaaS Sub</span>
+              <input type="range" class="ctrl-sl" id="saasSl" min="0" max="100000" value="0" step="1000">
+              <output class="ctrl-out" id="saasOut">$0</output>
+            </div>
+            <div class="ctrl-row">
+              <span class="ctrl-lbl">Travel</span>
+              <input type="range" class="ctrl-sl" id="travSl" min="0" max="50000" value="0" step="500">
+              <output class="ctrl-out" id="travOut">$0</output>
             </div>
           </div>
           <div class="sum-grid" id="qbSum"></div>
@@ -437,52 +462,61 @@ const MODS=[
 const rates=ROLES.map(r=>r.rate);
 const hrs=MODS.map(m=>[...m.h]);
 const active=new Set(MODS.map((_,i)=>i));
+const selRoles=new Set(ROLES.map((_,i)=>i));
 
 /* 02 RATE CARD */
 ROLES.forEach((r,i)=>{
   const tr=document.createElement('tr');
-  tr.innerHTML=`<td class="role-icon">◆</td>
+  tr.innerHTML=`<td style="text-align:center"><input type="checkbox" class="role-chk" id="rc${i}" checked style="accent-color:var(--text);cursor:pointer;width:15px;height:15px"></td>
     <td><div class="role-name">${r.name}</div><div class="role-note">${r.note}</div></td>
     <td style="text-align:right"><div class="rate-input-cell"><span class="rate-pfx">$</span><input type="number" class="rate-inp" id="rt${i}" value="${r.rate}" min="0" step="5"><span class="rate-sfx">/ hr</span></div></td>
     <td style="font-family:var(--mono);font-size:.58rem;color:var(--text3)">${r.note}</td>`;
   document.getElementById('rateBody').appendChild(tr);
   document.getElementById('rt'+i).addEventListener('input',function(){rates[i]=parseFloat(this.value)||0;recalc();});
+  document.getElementById('rc'+i).addEventListener('change',function(){
+    this.checked?selRoles.add(i):selRoles.delete(i);
+    buildMatrix();recalc();
+  });
 });
 function updateBlended(){
-  document.getElementById('blendedVal').textContent='$'+(rates.reduce((a,b)=>a+b,0)/rates.length).toFixed(2)+' / hr';
+  const s=selCols();
+  const v=s.length?s.reduce((a,j)=>a+rates[j],0)/s.length:0;
+  document.getElementById('blendedVal').textContent='$'+v.toFixed(2)+' / hr';
 }
 
 /* 03 EFFORT MATRIX */
-(function(){
+function selCols(){return [...selRoles].sort((a,b)=>a-b);}
+function buildMatrix(){
   const t=document.getElementById('mxTable');
+  const cols=selCols();
   let h=`<thead><tr><th class="th-mod">Module</th>`;
-  ROLES.forEach(r=>h+=`<th title="${r.name}">${r.abbr}</th>`);
+  cols.forEach(j=>h+=`<th title="${ROLES[j].name}">${ROLES[j].abbr}</th>`);
   h+=`<th class="th-sum">Hrs</th><th class="th-sum">Int. Cost</th><th class="th-sum">Fee</th></tr></thead><tbody>`;
   MODS.forEach((m,i)=>{
     h+=`<tr><td class="td-mod"><div class="mod-id">${m.id}</div><div class="mod-name">${m.name}</div><div class="mod-dur">${m.dur}</div></td>`;
-    ROLES.forEach((_,j)=>h+=`<td style="padding:0"><input type="number" class="hr-inp${hrs[i][j]===0?' zero':''}" id="h${i}_${j}" value="${hrs[i][j]}" min="0" step="4"></td>`);
-    h+=`<td class="td-sum"><div class="s-hrs" id="mH${i}"></div><div class="s-cost" id="mC${i}"></div><div class="s-fee" id="mF${i}"></div></td></tr>`;
+    cols.forEach(j=>h+=`<td style="padding:0"><input type="number" class="hr-inp${hrs[i][j]===0?' zero':''}" id="h${i}_${j}" value="${hrs[i][j]}" min="0" step="4"></td>`);
+    h+=`<td class="td-sum"><div class="s-hrs" id="mH${i}"></div></td><td class="td-sum"><div class="s-cost" id="mC${i}"></div></td><td class="td-sum"><div class="s-fee" id="mF${i}"></div></td></tr>`;
   });
   h+=`</tbody><tfoot><tr><td class="td-mod"><div class="gd-label">Grand Total</div></td>`;
-  ROLES.forEach((_,j)=>h+=`<td style="padding:0;background:var(--bg2)"><div class="ct-hrs" id="cH${j}"></div><div class="ct-cost" id="cC${j}"></div></td>`);
-  h+=`<td class="td-sum"><div class="s-hrs" id="gH"></div><div class="s-cost" id="gC"></div><div class="s-fee" id="gF"></div></td></tr></tfoot>`;
+  cols.forEach(j=>h+=`<td style="padding:0;background:var(--bg2)"><div class="ct-hrs" id="cH${j}"></div><div class="ct-cost" id="cC${j}"></div></td>`);
+  h+=`<td class="td-sum"><div class="s-hrs" id="gH"></div></td><td class="td-sum"><div class="s-cost" id="gC"></div></td><td class="td-sum"><div class="s-fee" id="gF"></div></td></tr></tfoot>`;
   t.innerHTML=h;
-  MODS.forEach((_,i)=>ROLES.forEach((_,j)=>{
+  MODS.forEach((_,i)=>cols.forEach(j=>{
     document.getElementById(`h${i}_${j}`).addEventListener('input',function(){
       hrs[i][j]=parseFloat(this.value)||0;this.classList.toggle('zero',hrs[i][j]===0);recalc();
     });
   }));
-})();
+}
 function updateMatrix(){
   const mg=getMargin();let gH=0,gC=0;
   MODS.forEach((_,i)=>{
-    let mH=0,mC=0;ROLES.forEach((_,j)=>{mH+=hrs[i][j];mC+=hrs[i][j]*rates[j];});
+    let mH=0,mC=0;selRoles.forEach(j=>{mH+=hrs[i][j];mC+=hrs[i][j]*rates[j];});
     gH+=mH;gC+=mC;const fee=mC/(1-mg);
     document.getElementById('mH'+i).textContent=mH.toLocaleString()+'h';
     document.getElementById('mC'+i).textContent='$'+Math.round(mC).toLocaleString();
     document.getElementById('mF'+i).textContent='$'+Math.round(fee).toLocaleString();
   });
-  ROLES.forEach((_,j)=>{
+  selRoles.forEach(j=>{
     let cH=0,cC=0;MODS.forEach((_,i)=>{cH+=hrs[i][j];cC+=hrs[i][j]*rates[j];});
     document.getElementById('cH'+j).textContent=cH+'h';
     document.getElementById('cC'+j).textContent='$'+Math.round(cC/1000)+'K';
@@ -516,32 +550,52 @@ function updateMatrix(){
 })();
 function updateQBRows(){
   MODS.forEach((_,i)=>{
-    let mH=0,mC=0;ROLES.forEach((_,j)=>{mH+=hrs[i][j];mC+=hrs[i][j]*rates[j];});
+    let mH=0,mC=0;selRoles.forEach(j=>{mH+=hrs[i][j];mC+=hrs[i][j]*rates[j];});
     const fee=mC/(1-getMargin());
     document.getElementById('qH'+i).textContent=mH.toLocaleString()+'h';
     document.getElementById('qC'+i).textContent='$'+Math.round(mC).toLocaleString();
     document.getElementById('qF'+i).textContent='$'+Math.round(fee).toLocaleString();
   });
 }
+function val(id){return parseFloat(document.getElementById(id).value)||0}
+function quoteCalc(){
+  const mg=getMargin(),dc=getDiscount();
+  const cont=val('contSl')/100,comm=val('commSl')/100,vat=val('vatSl')/100;
+  const saas=val('saasSl'),trav=val('travSl');
+  let tH=0,tC=0;const rC=new Array(ROLES.length).fill(0);
+  active.forEach(i=>selRoles.forEach(j=>{tH+=hrs[i][j];tC+=hrs[i][j]*rates[j];rC[j]+=hrs[i][j]*rates[j];}));
+  const fee=tC/(1-mg);
+  const contAmt=fee*cont;
+  const sub=fee+contAmt+saas+trav;
+  const afterDisc=sub*(1-dc);
+  const commAmt=afterDisc*comm;
+  const net=afterDisc+commAmt;
+  const vatAmt=net*vat;
+  const adj=net+vatAmt;
+  const mD=fee-tC,eff=tH?adj/tH:0;
+  return {mg,dc,cont,comm,vat,saas,trav,tH,tC,rC,fee,contAmt,commAmt,vatAmt,adj,mD,eff};
+}
 function updateQuote(){
-  const mg=getMargin(),dc=getDiscount();let tH=0,tC=0;
-  const rC=new Array(ROLES.length).fill(0);
-  active.forEach(i=>ROLES.forEach((_,j)=>{tH+=hrs[i][j];tC+=hrs[i][j]*rates[j];rC[j]+=hrs[i][j]*rates[j];}));
-  const fee=tC/(1-mg),adj=fee*(1-dc),mD=adj-tC,eff=tH?adj/tH:0;
+  const q=quoteCalc();
   document.getElementById('qbSum').innerHTML=`
     <div class="sum-card"><span class="sum-val">${active.size}</span><div class="sum-lbl">Modules</div></div>
-    <div class="sum-card"><span class="sum-val">${tH.toLocaleString()}</span><div class="sum-lbl">Hours</div></div>
-    <div class="sum-card"><span class="sum-val">$${Math.round(tC/1000)}K</span><div class="sum-lbl">Int. Cost</div></div>
-    <div class="sum-card"><span class="sum-val">$${eff.toFixed(0)}</span><div class="sum-lbl">Eff. $/hr</div></div>`;
+    <div class="sum-card"><span class="sum-val">${q.tH.toLocaleString()}</span><div class="sum-lbl">Hours</div></div>
+    <div class="sum-card"><span class="sum-val">$${Math.round(q.tC/1000)}K</span><div class="sum-lbl">Int. Cost</div></div>
+    <div class="sum-card"><span class="sum-val">$${q.eff.toFixed(0)}</span><div class="sum-lbl">Eff. $/hr</div></div>`;
   document.getElementById('qbBreak').innerHTML=
-    ROLES.map((r,j)=>rC[j]?`<div class="br-row"><span class="br-role">${r.abbr} · $${rates[j]}/hr</span><span class="br-val">$${Math.round(rC[j]).toLocaleString()}</span></div>`:'').join('')+
-    `<div class="br-sep"></div><div class="br-tot"><span class="br-tot-lbl">Internal cost</span><span class="br-tot-val">$${Math.round(tC).toLocaleString()}</span></div>`;
-  document.getElementById('finalPrice').textContent='$'+Math.round(adj).toLocaleString();
+    selCols().map(j=>q.rC[j]?`<div class="br-row"><span class="br-role">${ROLES[j].abbr} · $${rates[j]}/hr</span><span class="br-val">$${Math.round(q.rC[j]).toLocaleString()}</span></div>`:'').join('')+
+    `<div class="br-sep"></div><div class="br-tot"><span class="br-tot-lbl">Internal cost</span><span class="br-tot-val">$${Math.round(q.tC).toLocaleString()}</span></div>`+
+    (q.contAmt?`<div class="br-row"><span class="br-role">Contingency</span><span class="br-val">$${Math.round(q.contAmt).toLocaleString()}</span></div>`:'')+
+    (q.saas?`<div class="br-row"><span class="br-role">SaaS subs</span><span class="br-val">$${Math.round(q.saas).toLocaleString()}</span></div>`:'')+
+    (q.trav?`<div class="br-row"><span class="br-role">Travel</span><span class="br-val">$${Math.round(q.trav).toLocaleString()}</span></div>`:'')+
+    (q.commAmt?`<div class="br-row"><span class="br-role">Sales comm.</span><span class="br-val">$${Math.round(q.commAmt).toLocaleString()}</span></div>`:'')+
+    (q.vatAmt?`<div class="br-row"><span class="br-role">VAT/GST</span><span class="br-val">$${Math.round(q.vatAmt).toLocaleString()}</span></div>`:'');
+  document.getElementById('finalPrice').textContent='$'+Math.round(q.adj).toLocaleString();
   document.getElementById('finalSub').innerHTML=`
-    <span>Margin <strong>${(mg*100).toFixed(0)}%</strong></span>
-    <span>Margin$ <strong>$${Math.round(mD).toLocaleString()}</strong></span>
-    <span>Disc <strong>${(dc*100).toFixed(0)}%</strong></span>
-    <span>${tH.toLocaleString()} hrs</span>`;
+    <span>Margin <strong>${(q.mg*100).toFixed(0)}%</strong></span>
+    <span>Margin$ <strong>$${Math.round(q.mD).toLocaleString()}</strong></span>
+    <span>Disc <strong>${(q.dc*100).toFixed(0)}%</strong></span>
+    <span>${q.tH.toLocaleString()} hrs</span>`;
 }
 function getMargin(){return parseInt(document.getElementById('marginSl').value)/100}
 function getDiscount(){return parseInt(document.getElementById('discSl').value)/100}
@@ -549,31 +603,39 @@ document.getElementById('marginSl').addEventListener('input',function(){document
 document.getElementById('discSl').addEventListener('input',function(){
   const v=parseInt(this.value);
   document.getElementById('discOut').value=(v>0?'-':v<0?'+':'')+Math.abs(v)+'%';updateQuote();});
+[['contSl','contOut','%'],['commSl','commOut','%'],['vatSl','vatOut','%']].forEach(([s,o])=>
+  document.getElementById(s).addEventListener('input',function(){document.getElementById(o).value=this.value+'%';updateQuote();}));
+[['saasSl','saasOut'],['travSl','travOut']].forEach(([s,o])=>
+  document.getElementById(s).addEventListener('input',function(){document.getElementById(o).value='$'+parseInt(this.value).toLocaleString();updateQuote();}));
 function recalc(){updateBlended();updateMatrix();updateQBRows();updateQuote();}
 
 function exportQ(){
-  const mg=getMargin(),dc=getDiscount();let tH=0,tC=0;
-  const lines=['KNEURAPRICE — Custom Quote','='.repeat(52),'','RATE CARD'];
-  ROLES.forEach((r,i)=>lines.push(`  ${r.abbr.padEnd(4)} ${r.name.padEnd(34)} $${rates[i]}/hr`));
+  const q=quoteCalc();
+  const lines=['KNEURAPRICE — Custom Quote','='.repeat(52),'','RATE CARD (selected roles)'];
+  selCols().forEach(j=>lines.push(`  ${ROLES[j].abbr.padEnd(4)} ${ROLES[j].name.padEnd(34)} $${rates[j]}/hr`));
   lines.push('','SELECTED MODULES');
   active.forEach(i=>{
-    let mH=0,mC=0;ROLES.forEach((_,j)=>{mH+=hrs[i][j];mC+=hrs[i][j]*rates[j];});
-    tH+=mH;tC+=mC;
+    let mH=0,mC=0;selRoles.forEach(j=>{mH+=hrs[i][j];mC+=hrs[i][j]*rates[j];});
     lines.push(`  ${MODS[i].id.padEnd(5)} ${MODS[i].name.padEnd(44)} ${String(mH+'h').padStart(6)}  $${Math.round(mC).toLocaleString()}`);
   });
-  const fee=tC/(1-mg),adj=fee*(1-dc);
   lines.push('','='.repeat(52),
-    `Hours:          ${tH.toLocaleString()}`,
-    `Internal Cost:  $${Math.round(tC).toLocaleString()}`,
-    `Margin:         ${(mg*100).toFixed(0)}%`,
-    `Discount:       ${(dc*100).toFixed(0)}%`,
-    `CLIENT PRICE:   $${Math.round(adj).toLocaleString()}`);
+    `Hours:           ${q.tH.toLocaleString()}`,
+    `Internal Cost:   $${Math.round(q.tC).toLocaleString()}`,
+    `Margin:          ${(q.mg*100).toFixed(0)}%`,
+    `Contingency:     ${(q.cont*100).toFixed(0)}%  ($${Math.round(q.contAmt).toLocaleString()})`,
+    `SaaS Subs:       $${Math.round(q.saas).toLocaleString()}`,
+    `Travel:          $${Math.round(q.trav).toLocaleString()}`,
+    `Discount:        ${(q.dc*100).toFixed(0)}%`,
+    `Sales Comm:      ${(q.comm*100).toFixed(0)}%  ($${Math.round(q.commAmt).toLocaleString()})`,
+    `VAT/GST:         ${(q.vat*100).toFixed(0)}%  ($${Math.round(q.vatAmt).toLocaleString()})`,
+    `CLIENT PRICE:    $${Math.round(q.adj).toLocaleString()}`);
   navigator.clipboard.writeText(lines.join('\n')).then(()=>{
     const b=document.querySelector('.exp-btn'),o=b.textContent;
     b.textContent='Copied ✓';setTimeout(()=>b.textContent=o,2200);
   }).catch(()=>{});
 }
 
+buildMatrix();
 recalc();
 </script>
 </body>
