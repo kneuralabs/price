@@ -94,6 +94,12 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;background:var(--navbg);back
 .role-icon{font-size:.75rem;opacity:.5;text-align:center}
 .role-name{font-weight:500;color:var(--text);font-size:.82rem}
 .role-note{font-family:var(--mono);font-size:.58rem;color:var(--text3);margin-top:.1rem}
+input.role-name-inp{font-weight:500;color:var(--text);font-size:.82rem;background:transparent;border:none;border-bottom:1px dashed transparent;padding:0 0 1px;width:100%;outline:none;font-family:var(--sans);transition:border-color .15s;cursor:text}
+input.role-name-inp:hover{border-bottom-color:var(--border2)}
+input.role-name-inp:focus{border-bottom-color:var(--hi)}
+input.ctrl-out-inp{font-family:var(--mono);font-size:.8rem;color:var(--text);min-width:38px;width:52px;text-align:right;font-weight:500;background:transparent;border:none;border-bottom:1px dashed transparent;padding:0;outline:none;cursor:text;transition:border-color .15s}
+input.ctrl-out-inp:hover{border-bottom-color:var(--border2)}
+input.ctrl-out-inp:focus{border-bottom-color:var(--hi)}
 .rate-input-cell{display:flex;align-items:center;gap:.3rem;justify-content:flex-end}
 .rate-pfx{font-family:var(--mono);font-size:.75rem;color:var(--text3)}
 input[type=number].rate-inp{font-family:var(--mono);font-size:.9rem;color:var(--text);background:transparent;border:none;border-bottom:1px solid var(--border2);width:58px;padding:.15rem .2rem;text-align:right;outline:none;transition:border-color .15s;-moz-appearance:textfield}
@@ -479,37 +485,37 @@ input[type=range].ctrl-sl{flex:1;min-width:0;width:0;accent-color:var(--text);cu
             <div class="ctrl-row">
               <span class="ctrl-lbl">Margin</span>
               <input type="range" class="ctrl-sl" id="marginSl" min="5" max="60" value="25" step="1">
-              <output class="ctrl-out" id="marginOut">25%</output>
+              <input type="text" class="ctrl-out ctrl-out-inp" id="marginOut" value="25%">
             </div>
             <div class="ctrl-row">
               <span class="ctrl-lbl">Discount</span>
               <input type="range" class="ctrl-sl" id="discSl" min="-25" max="25" value="0" step="1">
-              <output class="ctrl-out" id="discOut">0%</output>
+              <input type="text" class="ctrl-out ctrl-out-inp" id="discOut" value="0%">
             </div>
             <div class="ctrl-row">
               <span class="ctrl-lbl">Conting.</span>
               <input type="range" class="ctrl-sl" id="contSl" min="0" max="25" value="0" step="1">
-              <output class="ctrl-out" id="contOut">0%</output>
+              <input type="text" class="ctrl-out ctrl-out-inp" id="contOut" value="0%">
             </div>
             <div class="ctrl-row">
               <span class="ctrl-lbl">Sales Cm</span>
               <input type="range" class="ctrl-sl" id="commSl" min="0" max="20" value="0" step="1">
-              <output class="ctrl-out" id="commOut">0%</output>
+              <input type="text" class="ctrl-out ctrl-out-inp" id="commOut" value="0%">
             </div>
             <div class="ctrl-row">
               <span class="ctrl-lbl">VAT/GST</span>
               <input type="range" class="ctrl-sl" id="vatSl" min="0" max="30" value="0" step="1">
-              <output class="ctrl-out" id="vatOut">0%</output>
+              <input type="text" class="ctrl-out ctrl-out-inp" id="vatOut" value="0%">
             </div>
             <div class="ctrl-row">
               <span class="ctrl-lbl">SaaS Sub</span>
               <input type="range" class="ctrl-sl" id="saasSl" min="0" max="100000" value="0" step="1000">
-              <output class="ctrl-out" id="saasOut">$0</output>
+              <input type="text" class="ctrl-out ctrl-out-inp" id="saasOut" value="$0">
             </div>
             <div class="ctrl-row">
               <span class="ctrl-lbl">Travel</span>
               <input type="range" class="ctrl-sl" id="travSl" min="0" max="50000" value="0" step="500">
-              <output class="ctrl-out" id="travOut">$0</output>
+              <input type="text" class="ctrl-out ctrl-out-inp" id="travOut" value="$0">
             </div>
             </div>
           </div>
@@ -593,13 +599,14 @@ const fte=ROLES.map(()=>1);
 ROLES.forEach((r,i)=>{
   const tr=document.createElement('tr');
   tr.innerHTML=`<td style="text-align:center"><input type="checkbox" class="role-chk" id="rc${i}" checked style="accent-color:var(--text);cursor:pointer;width:15px;height:15px"></td>
-    <td><div class="role-name">${r.name}</div><div class="role-note">${r.note}</div></td>
+    <td><input type="text" class="role-name-inp" id="rn${i}" value="${r.name}"><div class="role-note">${r.note}</div></td>
     <td style="text-align:right"><input type="number" class="rate-inp" id="ft${i}" value="1" min="0" step="0.5" style="width:46px"></td>
     <td style="text-align:right"><div class="rate-input-cell"><span class="rate-pfx">$</span><input type="number" class="rate-inp" id="rt${i}" value="${r.rate}" min="0" step="5"><span class="rate-sfx">/ hr</span></div></td>
     <td style="font-family:var(--mono);font-size:.58rem;color:var(--text3)">${r.note}</td>`;
   document.getElementById('rateBody').appendChild(tr);
   document.getElementById('rt'+i).addEventListener('input',function(){rates[i]=parseFloat(this.value)||0;recalc();});
   document.getElementById('ft'+i).addEventListener('input',function(){fte[i]=parseFloat(this.value)||0;recalc();});
+  document.getElementById('rn'+i).addEventListener('input',function(){ROLES[i].name=this.value;buildMatrix();recalc();});
   document.getElementById('rc'+i).addEventListener('change',function(){
     this.checked?selRoles.add(i):selRoles.delete(i);
     buildMatrix();recalc();
@@ -735,6 +742,53 @@ document.getElementById('discSl').addEventListener('input',function(){
 [['saasSl','saasOut'],['travSl','travOut']].forEach(([s,o])=>
   document.getElementById(s).addEventListener('input',function(){document.getElementById(o).value='$'+parseInt(this.value).toLocaleString();updateQuote();}));
 function recalc(){updateBlended();updateMatrix();updateQBRows();updateQuote();}
+
+/* Editable ctrl-out inputs → update sliders */
+function setupPctInp(inpId,slId,min,max,fmtFn){
+  const inp=document.getElementById(inpId),sl=document.getElementById(slId);
+  function apply(){
+    const raw=inp.value.replace(/[%+\-\s]/g,'');
+    const parsed=parseFloat(raw);
+    if(isNaN(parsed))return;
+    // For discount, sign in display is inverted: "-5%" means slider=5
+    let v;
+    if(inpId==='discOut'){
+      const sign=inp.value.trim()[0];
+      if(sign==='-')v=Math.abs(parsed); // discount → positive slider
+      else if(sign==='+')v=-Math.abs(parsed); // surcharge → negative slider
+      else v=Math.abs(parsed); // no sign → treat as discount
+    } else {
+      v=parsed;
+    }
+    v=Math.max(min,Math.min(max,v));
+    sl.value=v;
+    inp.value=fmtFn(v);
+    recalc();
+  }
+  inp.addEventListener('change',apply);
+  inp.addEventListener('keydown',function(e){if(e.key==='Enter'){this.blur();apply();}});
+}
+function setupDollarInp(inpId,slId,min,max,step){
+  const inp=document.getElementById(inpId),sl=document.getElementById(slId);
+  function apply(){
+    const raw=inp.value.replace(/[$,\s]/g,'');
+    let v=parseFloat(raw);
+    if(isNaN(v))return;
+    v=Math.max(min,Math.min(max,Math.round(v/step)*step));
+    sl.value=v;
+    inp.value='$'+v.toLocaleString();
+    recalc();
+  }
+  inp.addEventListener('change',apply);
+  inp.addEventListener('keydown',function(e){if(e.key==='Enter'){this.blur();apply();}});
+}
+setupPctInp('marginOut','marginSl',5,60,v=>v+'%');
+setupPctInp('discOut','discSl',-25,25,v=>(v>0?'-':v<0?'+':'')+Math.abs(v)+'%');
+setupPctInp('contOut','contSl',0,25,v=>v+'%');
+setupPctInp('commOut','commSl',0,20,v=>v+'%');
+setupPctInp('vatOut','vatSl',0,30,v=>v+'%');
+setupDollarInp('saasOut','saasSl',0,100000,1000);
+setupDollarInp('travOut','travSl',0,50000,500);
 
 function exportQ(){
   const q=quoteCalc();
