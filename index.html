@@ -152,12 +152,12 @@ input[type=number].hr-inp.zero{color:var(--text3);opacity:.2}
 .qm-r{font-family:var(--mono);font-size:.75rem;text-align:right;white-space:nowrap}
 .qm-hrs{color:var(--text2)}.qm-cost{color:var(--text)}.qm-fee{color:var(--hi)}
 .qb-panel{display:flex;flex-direction:column;gap:.875rem;position:sticky;top:0}
-.pbox{border:1px solid var(--border);background:var(--bg1);padding:1.1rem 1.25rem}
+.pbox{border:1px solid var(--border);background:var(--bg1);padding:1.1rem 1.25rem;overflow:hidden}
 .pbox-lbl{font-family:var(--mono);font-size:.56rem;letter-spacing:.16em;text-transform:uppercase;color:var(--text3);margin-bottom:.875rem;padding-bottom:.5rem;border-bottom:1px solid var(--border)}
-.ctrl-row{display:flex;align-items:center;gap:.75rem;margin-bottom:.75rem}
+.ctrl-row{display:flex;align-items:center;gap:.75rem;margin-bottom:.75rem;min-width:0}
 .ctrl-row:last-child{margin-bottom:0}
 .ctrl-lbl{font-family:var(--mono);font-size:.62rem;color:var(--text2);white-space:nowrap;min-width:58px}
-input[type=range].ctrl-sl{flex:1;accent-color:var(--text);cursor:pointer;height:2px}
+input[type=range].ctrl-sl{flex:1;min-width:0;width:0;accent-color:var(--text);cursor:pointer;height:2px}
 .ctrl-out{font-family:var(--mono);font-size:.8rem;color:var(--text);min-width:38px;text-align:right;font-weight:500}
 .sum-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border)}
 .sum-card{background:var(--bg1);padding:.875rem 1rem;transition:background .15s}
