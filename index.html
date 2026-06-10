@@ -3,7 +3,25 @@
 <head>
 <meta charset="UTF-8">
 <script>
-(function(){var K="kn-auth-session",S="https://sso.kneuralabs.com/";var p=new URLSearchParams(location.search),t=p.get("kn-auth");if(t){try{sessionStorage.setItem(K,t);}catch(e){}p.delete("kn-auth");history.replaceState(null,"",location.pathname+(p.toString()?"?"+p:"")+location.hash);}if(!sessionStorage.getItem(K)){location.replace(S+"?redirect="+encodeURIComponent(location.href));}})();
+(function(){
+  var K="kn-auth-session",S="https://sso.kneuralabs.com/";
+  function sget(k){try{return sessionStorage.getItem(k)}catch(e){return null}}
+  function sset(k,v){try{sessionStorage.setItem(k,v)}catch(e){}}
+  var p=new URLSearchParams(location.search),t=p.get("kn-auth");
+  if(t){
+    sset(K,t);
+    // In-memory fallback: when sessionStorage is unavailable (private mode,
+    // storage-blocked webviews) this breaks the SSO redirect loop for the
+    // current page load.
+    window.__knAuth=t;
+    p.delete("kn-auth");
+    history.replaceState(null,"",location.pathname+(p.toString()?"?"+p:"")+location.hash);
+  }
+  if(!sget(K)&&!window.__knAuth){
+    document.documentElement.style.visibility="hidden";
+    location.replace(S+"?redirect="+encodeURIComponent(location.href));
+  }
+})();
 </script>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>KNEURAPRICE</title>
@@ -559,13 +577,17 @@ let cur=0;
 const pages=document.querySelectorAll('.pg');
 const tabs=document.querySelectorAll('.nav-tab');
 const dots=document.querySelectorAll('.pg-dot');
+const exitTimers=new Map();
 function showPage(n){
   if(n===cur)return;
   pages[cur].classList.remove('active');
   pages[cur].classList.add('exit');
   const prev=cur;
   cur=n;
-  setTimeout(()=>pages[prev].classList.remove('exit'),320);
+  clearTimeout(exitTimers.get(prev));
+  exitTimers.set(prev,setTimeout(()=>pages[prev].classList.remove('exit'),320));
+  clearTimeout(exitTimers.get(cur));
+  pages[cur].classList.remove('exit');
   pages[cur].classList.add('active');
   pages[cur].scrollTop=0;
   tabs.forEach((t,i)=>t.classList.toggle('active',i===cur));
@@ -596,6 +618,7 @@ const MODS=[
   {id:'M10',name:'Monitoring & Managed Service (per qtr)',   dur:'Quarterly',h:[4,24,60,80,40,16,40]},
   {id:'M11',name:'IT Modernization & Cloud Foundations',     dur:'12–20 wks',h:[40,120,200,240,400,60,80]},
 ];
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 const rates=ROLES.map(r=>r.rate);
 const hrs=MODS.map(m=>[...m.h]);
 const active=new Set(MODS.map((_,i)=>i));
@@ -606,7 +629,7 @@ const fte=ROLES.map(()=>1);
 ROLES.forEach((r,i)=>{
   const tr=document.createElement('tr');
   tr.innerHTML=`<td style="text-align:center"><input type="checkbox" class="role-chk" id="rc${i}" checked style="accent-color:var(--text);cursor:pointer;width:15px;height:15px"></td>
-    <td><input type="text" class="role-name-inp" id="rn${i}" value="${r.name}"><div class="role-note">${r.note}</div></td>
+    <td><input type="text" class="role-name-inp" id="rn${i}" value="${esc(r.name)}"><div class="role-note">${esc(r.note)}</div></td>
     <td style="text-align:right"><input type="number" class="rate-inp" id="ft${i}" value="1" min="0" step="0.5" style="width:46px"></td>
     <td style="text-align:right"><div class="rate-input-cell"><span class="rate-pfx">$</span><input type="number" class="rate-inp" id="rt${i}" value="${r.rate}" min="0" step="5"><span class="rate-sfx">/ hr</span></div></td>
     <td style="font-family:var(--mono);font-size:.58rem;color:var(--text3)">${r.note}</td>`;
@@ -631,7 +654,7 @@ function buildMatrix(){
   const t=document.getElementById('mxTable');
   const cols=selCols();
   let h=`<thead><tr><th class="th-mod">Module</th>`;
-  cols.forEach(j=>h+=`<th title="${ROLES[j].abbr}">${ROLES[j].name}</th>`);
+  cols.forEach(j=>h+=`<th title="${esc(ROLES[j].abbr)}">${esc(ROLES[j].name)}</th>`);
   h+=`<th class="th-sum">Hrs</th><th class="th-sum">Int. Cost</th><th class="th-sum">Fee</th></tr></thead><tbody>`;
   MODS.forEach((m,i)=>{
     h+=`<tr><td class="td-mod"><div class="mod-id">${m.id}</div><div class="mod-name">${m.name}</div><div class="mod-dur">${m.dur}</div></td>`;
@@ -773,7 +796,7 @@ function setupPctInp(inpId,slId,min,max,fmtFn){
     recalc();
   }
   inp.addEventListener('change',apply);
-  inp.addEventListener('keydown',function(e){if(e.key==='Enter'){this.blur();apply();}});
+  inp.addEventListener('keydown',function(e){if(e.key==='Enter')this.blur();});
 }
 function setupDollarInp(inpId,slId,min,max,step){
   const inp=document.getElementById(inpId),sl=document.getElementById(slId);
@@ -787,7 +810,7 @@ function setupDollarInp(inpId,slId,min,max,step){
     recalc();
   }
   inp.addEventListener('change',apply);
-  inp.addEventListener('keydown',function(e){if(e.key==='Enter'){this.blur();apply();}});
+  inp.addEventListener('keydown',function(e){if(e.key==='Enter')this.blur();});
 }
 setupPctInp('marginOut','marginSl',5,60,v=>v+'%');
 setupPctInp('discOut','discSl',-25,25,v=>(v>0?'-':v<0?'+':'')+Math.abs(v)+'%');
@@ -817,10 +840,24 @@ function exportQ(){
     `Sales Comm:      ${(q.comm*100).toFixed(0)}%  ($${Math.round(q.commAmt).toLocaleString()})`,
     `VAT/GST:         ${(q.vat*100).toFixed(0)}%  ($${Math.round(q.vatAmt).toLocaleString()})`,
     `CLIENT PRICE:    $${Math.round(q.adj).toLocaleString()}`);
-  navigator.clipboard.writeText(lines.join('\n')).then(()=>{
-    const b=document.querySelector('.exp-btn'),o=b.textContent;
-    b.textContent='Copied ✓';setTimeout(()=>b.textContent=o,2200);
-  }).catch(()=>{});
+  const text=lines.join('\n');
+  const b=document.querySelector('.exp-btn'),o=b.textContent;
+  function done(ok){b.textContent=ok?'Copied ✓':'Copy failed — see console';setTimeout(()=>b.textContent=o,2200);}
+  function legacyCopy(){
+    const ta=document.createElement('textarea');
+    ta.value=text;ta.style.position='fixed';ta.style.opacity='0';
+    document.body.appendChild(ta);ta.select();
+    let ok=false;
+    try{ok=document.execCommand('copy');}catch(e){}
+    document.body.removeChild(ta);
+    if(!ok)console.error('KNEURAPRICE export: clipboard unavailable. Quote text:\n'+text);
+    done(ok);
+  }
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(()=>done(true)).catch(legacyCopy);
+  }else{
+    legacyCopy();
+  }
 }
 
 buildMatrix();
