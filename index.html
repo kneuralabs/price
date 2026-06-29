@@ -30,239 +30,222 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500&family=Inter:wght@300;400;500;600;700&display=swap" />
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500&family=Inter:wght@300;400;500;600;700&display=swap" media="print" onload="this.media='all'" />
-<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500&family=Inter:wght@300;400;500;600;700&display=swap" /></noscript>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap" media="print" onload="this.media='all'" />
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap" /></noscript>
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-<nav>
+<nav class="nav">
   <div class="nav-inner">
-    <div class="logo"><img src="LOGO.png" class="logo-img" alt="Kneura"><span>KNEURA<em>PRICE</em></span></div>
+    <div class="logo"><span class="logo-dot"></span><span>Kneura<span class="ac">price</span></span></div>
     <div class="nav-tabs">
-      <div class="nav-tab active" data-pg="0"><span class="tnum">01</span>&nbsp;Instructions</div>
-      <div class="nav-tab" data-pg="1"><span class="tnum">02</span>&nbsp;Rate Card</div>
-      <div class="nav-tab" data-pg="2"><span class="tnum">03</span>&nbsp;Effort Matrix</div>
-      <div class="nav-tab" data-pg="3"><span class="tnum">04</span>&nbsp;Quote Builder</div>
+      <button class="tab active" data-pg="0"><span class="tab-num">01</span><span class="tab-label">Instructions</span></button>
+      <button class="tab" data-pg="1"><span class="tab-num">02</span><span class="tab-label">Rate Card</span></button>
+      <button class="tab" data-pg="2"><span class="tab-num">03</span><span class="tab-label">Effort Matrix</span></button>
+      <button class="tab" data-pg="3"><span class="tab-num">04</span><span class="tab-label">Quote Builder</span></button>
     </div>
     <span class="badge">AI Governance</span>
   </div>
 </nav>
 
-<div class="page-wrap">
+<main class="main">
 
   <!-- PAGE 01 · INSTRUCTIONS -->
-  <div class="pg active" id="pg0">
-    <div class="pg-inner">
-      <div class="pg-head">
-        <span class="pg-num">01</span>
-        <span class="pg-title">Instructions &amp; Overview</span>
-        <span class="pg-sub">Start here before building a quote</span>
-      </div>
-
-      <div class="intro-hero">
-        <div>
-          <div class="intro-hero-title">KNEURA<span>PRICE</span><br>Pricing Engine</div>
-        </div>
-        <div class="intro-hero-meta">
-          AI Governance Advisory<br>
-          4-step quoting workflow<br>
-          Live calculation · Export ready
-        </div>
-      </div>
-
-      <div class="intro-steps">
-        <div class="intro-step">
-          <div class="step-num">02</div>
-          <div class="step-label">Set Your Rate Card</div>
-          <div class="step-desc">Edit the hourly rate for each of the 7 roles. Every downstream number — effort costs, blended rates, and client fees — updates live as you type.</div>
-        </div>
-        <div class="intro-step">
-          <div class="step-num">03</div>
-          <div class="step-label">Tune the Effort Matrix</div>
-          <div class="step-desc">Enter hours per module per role across the 11 × 7 grid. Cost derives automatically from the Rate Card. Grand totals appear in the footer row.</div>
-        </div>
-        <div class="intro-step">
-          <div class="step-num">04</div>
-          <div class="step-label">Build &amp; Export the Quote</div>
-          <div class="step-desc">Toggle modules on/off to scope the engagement. Slide margin and discount. The client price box updates instantly. Hit Export to copy to clipboard.</div>
-        </div>
-      </div>
-
-      <div class="intro-cards">
-        <div class="intro-card">
-          <div class="intro-card-num">Inputs</div>
-          <div class="intro-card-title">What you control</div>
-          <div class="intro-card-body">
-            <ul>
-              <li>Hourly rate for each of the 7 roles</li>
-              <li>Hours per module &amp; role (11 × 7 matrix)</li>
-              <li>Which modules are in scope (toggles)</li>
-              <li>Margin % — target fee above cost</li>
-              <li>Discount % — client-facing adjustment</li>
-            </ul>
-          </div>
-        </div>
-        <div class="intro-card">
-          <div class="intro-card-num">Outputs</div>
-          <div class="intro-card-title">What gets calculated</div>
-          <div class="intro-card-body">
-            <ul>
-              <li>Blended rate across all roles</li>
-              <li>Internal cost per module &amp; role</li>
-              <li>Client fee with margin applied</li>
-              <li>Effective $/hr for selected scope</li>
-              <li>Clipboard-ready quote summary</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      <div class="intro-note">
-        <div class="intro-note-label">Note</div>
-        <div class="intro-note-text">All data lives in-browser — nothing is sent to a server. Refreshing the page resets everything to defaults. Work through pages in order (02 → 03 → 04) for best results. Changes on any page recalculate all others instantly.</div>
-      </div>
-
-      <div class="intro-cta">
-        <button class="btn-primary" data-goto="1">Start with Rate Card →</button>
-        <button class="btn-outline" data-goto="3">Jump to Quote Builder</button>
+  <section class="page active" id="pg0">
+    <div class="phead intro">
+      <span class="phead-num">01</span>
+      <div>
+        <div class="intro-kicker">Instructions &amp; Overview</div>
+        <div class="intro-kicker-sub">Start here before building a quote</div>
       </div>
     </div>
-  </div>
+
+    <div class="hero">
+      <div class="hero-title">Kneura<span class="ac">price</span><br><span class="light">Pricing Engine</span></div>
+      <div class="hero-meta">AI Governance Advisory<br>4-step quoting workflow<br>Live calculation · Export ready</div>
+    </div>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-tag">02 — Rate Card</div>
+        <div class="step-title">Set your rate card</div>
+        <div class="step-desc">Edit the hourly rate for each role. Every downstream number — effort costs, blended rates, client fees — updates live as you type.</div>
+      </div>
+      <div class="step">
+        <div class="step-tag">03 — Effort Matrix</div>
+        <div class="step-title">Tune the effort matrix</div>
+        <div class="step-desc">Enter hours per module per role across the grid. Cost derives automatically from the Rate Card. Grand totals appear in the footer row.</div>
+      </div>
+      <div class="step">
+        <div class="step-tag">04 — Quote Builder</div>
+        <div class="step-title">Build &amp; export</div>
+        <div class="step-desc">Toggle modules to scope the engagement. Slide margin and discount. The client price updates instantly — then export to clipboard.</div>
+      </div>
+    </div>
+
+    <div class="lists">
+      <div>
+        <div class="list-label">What you control</div>
+        <ul class="list">
+          <li>Hourly rate for each of the 7 roles</li>
+          <li>Hours per module &amp; role</li>
+          <li>Which modules are in scope</li>
+          <li>Margin — target fee above cost</li>
+          <li>Discount — client-facing adjustment</li>
+        </ul>
+      </div>
+      <div>
+        <div class="list-label">What gets calculated</div>
+        <ul class="list">
+          <li>Blended rate across all roles</li>
+          <li>Internal cost per module &amp; role</li>
+          <li>Client fee with margin applied</li>
+          <li>Effective $/hr for selected scope</li>
+          <li>Clipboard-ready quote summary</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="note">
+      <span class="note-tag">NOTE</span>
+      <div class="note-text">All data lives in-browser — nothing is sent to a server. Work through pages in order (02 → 03 → 04); changes on any page recalculate the others instantly.</div>
+    </div>
+
+    <div class="cta">
+      <button class="btn btn-primary" data-goto="1">Start with Rate Card →</button>
+      <button class="btn btn-outline" data-goto="3">Jump to Quote Builder</button>
+    </div>
+  </section>
 
   <!-- PAGE 02 · RATE CARD -->
-  <div class="pg" id="pg1">
-    <div class="pg-inner">
-      <div class="pg-head">
-        <span class="pg-num">02</span>
-        <span class="pg-title">Rate Card</span>
-        <span class="pg-sub">Edit any rate — matrix &amp; quote recalculate live</span>
-      </div>
-      <table class="rate-table">
-        <thead><tr>
-          <th style="width:42px;text-align:center">On</th>
-          <th>Role</th>
-          <th style="text-align:right;width:64px">FTE</th>
-          <th style="text-align:right">Rate / hr</th>
-          <th>Scope</th>
-        </tr></thead>
-        <tbody id="rateBody"></tbody>
-        <tfoot><tr class="blended-foot">
-          <td colspan="3" style="font-family:var(--mono);font-size:.6rem;color:var(--text3);padding:.7rem 1rem">Blended average across all roles</td>
-          <td style="text-align:right;padding:.7rem 1rem"><span class="blended-val" id="blendedVal">—</span></td>
-          <td style="font-family:var(--mono);font-size:.56rem;color:var(--text3);padding:.7rem 1rem">Actual mix varies by module</td>
-        </tr></tfoot>
-      </table>
-      <div class="pg-nav-row">
-        <button class="btn-outline" data-goto="0">← Instructions</button>
-        <button class="btn-primary" data-goto="2">Next: Effort Matrix →</button>
+  <section class="page" id="pg1">
+    <div class="phead">
+      <span class="phead-num">02</span>
+      <div>
+        <div class="phead-title">Rate Card</div>
+        <div class="phead-sub">Edit any rate — matrix &amp; quote recalculate live</div>
       </div>
     </div>
-  </div>
+
+    <div class="card">
+      <div class="rc-head">
+        <span class="c">On</span><span>Role</span><span class="r">FTE</span><span class="r">Rate / hr</span>
+      </div>
+      <div id="rateBody"></div>
+      <div class="rc-foot">
+        <span class="rc-foot-lbl">Blended average across selected roles</span>
+        <span class="rc-foot-val" id="blendedVal">—</span>
+      </div>
+    </div>
+
+    <div class="pnav">
+      <button class="btn btn-outline" data-goto="0">← Instructions</button>
+      <button class="btn btn-primary" data-goto="2">Next: Effort Matrix →</button>
+    </div>
+  </section>
 
   <!-- PAGE 03 · EFFORT MATRIX -->
-  <div class="pg" id="pg2">
-    <div class="pg-inner">
-      <div class="pg-head">
-        <span class="pg-num">03</span>
-        <span class="pg-title">Effort by Module &amp; Role</span>
-        <span class="pg-sub">Edit any cell — costs derive from Rate Card</span>
-      </div>
-      <div class="mx-wrap"><table class="mx" id="mxTable"></table></div>
-      <div class="pg-nav-row">
-        <button class="btn-outline" data-goto="1">← Rate Card</button>
-        <button class="btn-primary" data-goto="3">Next: Quote Builder →</button>
+  <section class="page" id="pg2">
+    <div class="phead">
+      <span class="phead-num">03</span>
+      <div>
+        <div class="phead-title">Effort by Module &amp; Role</div>
+        <div class="phead-sub">Edit any cell — costs derive from the Rate Card</div>
       </div>
     </div>
-  </div>
+
+    <div class="mx-card"><table class="mx" id="mxTable"></table></div>
+
+    <div class="pnav">
+      <button class="btn btn-outline" data-goto="1">← Rate Card</button>
+      <button class="btn btn-primary" data-goto="3">Next: Quote Builder →</button>
+    </div>
+  </section>
 
   <!-- PAGE 04 · QUOTE BUILDER -->
-  <div class="pg" id="pg3">
-    <div class="pg-inner">
-      <div class="pg-head">
-        <span class="pg-num">04</span>
-        <span class="pg-title">Quote Builder</span>
-        <span class="pg-sub">Calculated from 02 × 03 — toggle modules, set margin</span>
+  <section class="page" id="pg3">
+    <div class="phead">
+      <span class="phead-num">04</span>
+      <div>
+        <div class="phead-title">Quote Builder</div>
+        <div class="phead-sub">Calculated from 02 × 03 — toggle modules, set margin</div>
       </div>
-      <div class="qb-grid">
-        <table class="qb-mod-table">
-          <thead><tr>
-            <th style="width:32px"></th>
-            <th style="width:38px">ID</th>
-            <th>Module</th>
-            <th class="r hs">Hours</th>
-            <th class="r hs">Int. Cost</th>
-            <th class="r">Client Fee</th>
-          </tr></thead>
-          <tbody id="qbBody"></tbody>
-        </table>
-        <div class="qb-panel">
-          <div class="pbox">
-            <div class="pbox-lbl">Controls</div>
-            <div class="ctrl-grid">
-            <div class="ctrl-row">
-              <span class="ctrl-lbl">Margin</span>
-              <input type="range" class="ctrl-sl" id="marginSl" min="5" max="60" value="25" step="1">
-              <input type="text" class="ctrl-out ctrl-out-inp" id="marginOut" value="25%">
-            </div>
-            <div class="ctrl-row">
-              <span class="ctrl-lbl">Discount</span>
-              <input type="range" class="ctrl-sl" id="discSl" min="-25" max="25" value="0" step="1">
-              <input type="text" class="ctrl-out ctrl-out-inp" id="discOut" value="0%">
-            </div>
-            <div class="ctrl-row">
-              <span class="ctrl-lbl">Conting.</span>
-              <input type="range" class="ctrl-sl" id="contSl" min="0" max="25" value="0" step="1">
-              <input type="text" class="ctrl-out ctrl-out-inp" id="contOut" value="0%">
-            </div>
-            <div class="ctrl-row">
-              <span class="ctrl-lbl">Sales Cm</span>
-              <input type="range" class="ctrl-sl" id="commSl" min="0" max="20" value="0" step="1">
-              <input type="text" class="ctrl-out ctrl-out-inp" id="commOut" value="0%">
-            </div>
-            <div class="ctrl-row">
-              <span class="ctrl-lbl">VAT/GST</span>
-              <input type="range" class="ctrl-sl" id="vatSl" min="0" max="30" value="0" step="1">
-              <input type="text" class="ctrl-out ctrl-out-inp" id="vatOut" value="0%">
-            </div>
-            <div class="ctrl-row">
-              <span class="ctrl-lbl">SaaS Sub</span>
-              <input type="range" class="ctrl-sl" id="saasSl" min="0" max="100000" value="0" step="1000">
-              <input type="text" class="ctrl-out ctrl-out-inp" id="saasOut" value="$0">
-            </div>
-            <div class="ctrl-row">
-              <span class="ctrl-lbl">Travel</span>
-              <input type="range" class="ctrl-sl" id="travSl" min="0" max="50000" value="0" step="500">
-              <input type="text" class="ctrl-out ctrl-out-inp" id="travOut" value="$0">
-            </div>
-            </div>
+    </div>
+
+    <div class="qb">
+      <div class="card">
+        <div class="qb-list-head">
+          <span></span><span>Module</span><span class="r">Hours</span><span class="r">Fee</span>
+        </div>
+        <div id="qbBody"></div>
+      </div>
+
+      <div class="qb-side">
+        <div class="panel">
+          <div class="panel-lbl">Controls</div>
+          <div class="ctrl-row">
+            <span class="ctrl-lbl">Margin</span>
+            <input class="ctrl-sl" type="range" id="marginSl" min="5" max="60" value="25" step="1">
+            <input class="ctrl-val" type="text" id="marginOut" value="25%">
           </div>
-          <div class="sum-grid" id="qbSum"></div>
-          <div class="pbox qb-break">
-            <div class="pbox-lbl">Cost by Role</div>
-            <div id="qbBreak"></div>
+          <div class="ctrl-row">
+            <span class="ctrl-lbl">Discount</span>
+            <input class="ctrl-sl" type="range" id="discSl" min="-25" max="25" value="0" step="1">
+            <input class="ctrl-val" type="text" id="discOut" value="0%">
           </div>
-          <div class="final-box">
-            <div class="final-lbl">Client Price</div>
-            <div class="final-price" id="finalPrice">—</div>
-            <div class="final-sub" id="finalSub"></div>
-            <button class="exp-btn" id="expBtn">Export to Clipboard ↗</button>
+          <div class="ctrl-row">
+            <span class="ctrl-lbl">Conting.</span>
+            <input class="ctrl-sl" type="range" id="contSl" min="0" max="25" value="0" step="1">
+            <input class="ctrl-val" type="text" id="contOut" value="0%">
           </div>
+          <div class="ctrl-row">
+            <span class="ctrl-lbl">Sales Cm</span>
+            <input class="ctrl-sl" type="range" id="commSl" min="0" max="20" value="0" step="1">
+            <input class="ctrl-val" type="text" id="commOut" value="0%">
+          </div>
+          <div class="ctrl-row">
+            <span class="ctrl-lbl">VAT/GST</span>
+            <input class="ctrl-sl" type="range" id="vatSl" min="0" max="30" value="0" step="1">
+            <input class="ctrl-val" type="text" id="vatOut" value="0%">
+          </div>
+          <div class="ctrl-row">
+            <span class="ctrl-lbl">SaaS Sub</span>
+            <input class="ctrl-sl" type="range" id="saasSl" min="0" max="100000" value="0" step="1000">
+            <input class="ctrl-val" type="text" id="saasOut" value="$0">
+          </div>
+          <div class="ctrl-row">
+            <span class="ctrl-lbl">Travel</span>
+            <input class="ctrl-sl" type="range" id="travSl" min="0" max="50000" value="0" step="500">
+            <input class="ctrl-val" type="text" id="travOut" value="$0">
+          </div>
+        </div>
+
+        <div class="sumcards" id="qbSum"></div>
+
+        <div class="panel">
+          <div class="panel-lbl">Cost by Role</div>
+          <div id="qbBreak"></div>
+        </div>
+
+        <div class="price-box">
+          <div class="price-lbl">Client Price</div>
+          <div class="price-val" id="finalPrice">—</div>
+          <div class="price-meta" id="finalSub"></div>
+          <button class="price-export" id="expBtn">Export to Clipboard ↗</button>
         </div>
       </div>
     </div>
-  </div>
+  </section>
 
-</div><!-- /page-wrap -->
+</main>
 
-<button class="theme-tgl" id="themeTgl" type="button" aria-label="Toggle dark mode" title="Toggle dark / light">☾</button>
-
-<div class="pg-dots">
-  <div class="pg-dot active" data-goto="0" title="01 Instructions"></div>
-  <div class="pg-dot" data-goto="1" title="02 Rate Card"></div>
-  <div class="pg-dot" data-goto="2" title="03 Effort Matrix"></div>
-  <div class="pg-dot" data-goto="3" title="04 Quote Builder"></div>
+<div class="pagedots">
+  <button class="pagedot active" data-goto="0" title="01 Instructions"></button>
+  <button class="pagedot" data-goto="1" title="02 Rate Card"></button>
+  <button class="pagedot" data-goto="2" title="03 Effort Matrix"></button>
+  <button class="pagedot" data-goto="3" title="04 Quote Builder"></button>
 </div>
 
 <script type="module" src="js/main.js"></script>
