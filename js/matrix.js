@@ -1,7 +1,7 @@
 import {ROLES,MODS} from './data.js';
 import {state,selCols} from './state.js';
 import {moduleTotals,roleTotals} from './calc.js';
-import {$,esc,money,hours} from './util.js';
+import {$,esc,money,moneyK,hours} from './util.js';
 
 /* Page 03: effort matrix. Rebuilt whenever roles/names change. */
 export function buildMatrix(onCell){
@@ -40,7 +40,7 @@ export function updateMatrix(mg){
   state.selRoles.forEach(j=>{
     const {h:cH,c:cC}=roleTotals(j);
     $('cH'+j).textContent=hours(cH);
-    $('cC'+j).textContent='$'+Math.round(cC/1000)+'K';
+    $('cC'+j).textContent=moneyK(cC);
   });
   $('gH').textContent=hours(gH);
   $('gC').textContent=money(gC);

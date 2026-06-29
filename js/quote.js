@@ -1,7 +1,7 @@
 import {ROLES,MODS} from './data.js';
 import {state,selCols} from './state.js';
 import {moduleTotals} from './calc.js';
-import {$,money,hours} from './util.js';
+import {$,money,moneyK,hours} from './util.js';
 
 /* Page 04: quote builder rows, summary panel, breakdown, export. */
 
@@ -39,7 +39,7 @@ export function updateQuote(q){
   $('qbSum').innerHTML=`
     <div class="sum-card"><span class="sum-val">${state.active.size}</span><div class="sum-lbl">Modules</div></div>
     <div class="sum-card"><span class="sum-val">${Math.round(q.tH).toLocaleString()}</span><div class="sum-lbl">Hours</div></div>
-    <div class="sum-card"><span class="sum-val">$${Math.round(q.tC/1000)}K</span><div class="sum-lbl">Int. Cost</div></div>
+    <div class="sum-card"><span class="sum-val">${moneyK(q.tC)}</span><div class="sum-lbl">Int. Cost</div></div>
     <div class="sum-card"><span class="sum-val">$${q.eff.toFixed(0)}</span><div class="sum-lbl">Eff. $/hr</div></div>`;
   $('qbBreak').innerHTML=
     selCols().map(j=>q.rC[j]?`<div class="br-row"><span class="br-role">${ROLES[j].abbr} · $${state.rates[j]}/hr</span><span class="br-val">${money(q.rC[j])}</span></div>`:'').join('')+

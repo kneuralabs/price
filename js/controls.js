@@ -1,75 +1,81 @@
 import {$} from './util.js';
 
-/* Quote Builder control panel: sliders + their editable text twins. */
+/* Quote Builder control panel — declarative.
 
-const num=id=>parseFloat($(id).value)||0;
-export const getMargin=()=>parseInt($('marginSl').value)/100;
-export const getDiscount=()=>parseInt($('discSl').value)/100;
+   Each control pairs a native range slider with an editable text twin.
+   The slider's min/max/step live in the HTML and are the single source of
+   truth for its range; the text twin reads them back so the two can never
+   drift apart. Adding a control is one HTML <input> + one row below.
+
+   key    — field name in the snapshot consumed by quoteCalc()
+   sl/out — element ids of the slider and its editable text twin
+   kind   — 'pct'   → snapshot value is slider/100, shown as "N%"
+            'money' → snapshot value is the raw amount, shown as "$N"
+   signed — discount-style display: a positive slider shows as "-N%"
+            (a discount), a negative slider as "+N%" (a surcharge)
+   wide   — true when a change must recalc the matrix & quote rows (margin
+            feeds those); false when only the final quote panel is affected. */
+const CONTROLS=[
+  {key:'mg',  sl:'marginSl',out:'marginOut',kind:'pct',  wide:true},
+  {key:'dc',  sl:'discSl',  out:'discOut',  kind:'pct',  signed:true},
+  {key:'cont',sl:'contSl',  out:'contOut',  kind:'pct'},
+  {key:'comm',sl:'commSl',  out:'commOut',  kind:'pct'},
+  {key:'vat', sl:'vatSl',   out:'vatOut',   kind:'pct'},
+  {key:'saas',sl:'saasSl',  out:'saasOut',  kind:'money'},
+  {key:'trav',sl:'travSl',  out:'travOut',  kind:'money'},
+];
+
+const clamp=(v,lo,hi)=>Math.max(lo,Math.min(hi,v));
+const fmtPct=v=>v+'%';
+const fmtSigned=v=>(v>0?'-':v<0?'+':'')+Math.abs(v)+'%';
+const fmtMoney=v=>'$'+v.toLocaleString();
+const fmtOf=c=>c.signed?fmtSigned:c.kind==='money'?fmtMoney:fmtPct;
+
+/* Current slider position → snapshot value (percentages are fractions). */
+const valueOf=c=>{
+  const v=parseFloat($(c.sl).value)||0;
+  return c.kind==='money'?v:v/100;
+};
+
+export const getMargin=()=>valueOf(CONTROLS[0]);
 
 export function readControls(){
-  return {
-    mg:getMargin(),dc:getDiscount(),
-    cont:num('contSl')/100,comm:num('commSl')/100,vat:num('vatSl')/100,
-    saas:num('saasSl'),trav:num('travSl'),
-  };
+  const ctl={};
+  for(const c of CONTROLS)ctl[c.key]=valueOf(c);
+  return ctl;
 }
 
-const discFmt=v=>(v>0?'-':v<0?'+':'')+Math.abs(v)+'%';
-
-function setupPctInp(inpId,slId,min,max,fmtFn,onCommit){
-  const inp=$(inpId),sl=$(slId);
-  function apply(){
-    const raw=inp.value.replace(/[%+\-\s]/g,'');
-    const parsed=parseFloat(raw);
-    if(isNaN(parsed))return;
-    // For discount, sign in display is inverted: "-5%" means slider=5
-    let v;
-    if(inpId==='discOut'){
-      const sign=inp.value.trim()[0];
-      if(sign==='-')v=Math.abs(parsed); // discount → positive slider
-      else if(sign==='+')v=-Math.abs(parsed); // surcharge → negative slider
-      else v=Math.abs(parsed); // no sign → treat as discount
-    } else {
-      v=parsed;
-    }
-    v=Math.max(min,Math.min(max,v));
-    sl.value=v;
-    inp.value=fmtFn(v);
-    onCommit();
+/* Parse a typed value back to a slider position (clamped to the slider's
+   own range), or null when the text isn't a number. */
+function parseInput(c,text){
+  const sl=$(c.sl),lo=parseFloat(sl.min),hi=parseFloat(sl.max);
+  if(c.kind==='money'){
+    const v=parseFloat(text.replace(/[$,\s]/g,''));
+    if(isNaN(v))return null;
+    const step=parseFloat(sl.step)||1;
+    return clamp(Math.round(v/step)*step,lo,hi);
   }
-  inp.addEventListener('change',apply);
-  inp.addEventListener('keydown',function(e){if(e.key==='Enter')this.blur();});
-}
-
-function setupDollarInp(inpId,slId,min,max,step,onCommit){
-  const inp=$(inpId),sl=$(slId);
-  function apply(){
-    const raw=inp.value.replace(/[$,\s]/g,'');
-    let v=parseFloat(raw);
-    if(isNaN(v))return;
-    v=Math.max(min,Math.min(max,Math.round(v/step)*step));
-    sl.value=v;
-    inp.value='$'+v.toLocaleString();
-    onCommit();
-  }
-  inp.addEventListener('change',apply);
-  inp.addEventListener('keydown',function(e){if(e.key==='Enter')this.blur();});
+  const n=parseFloat(text.replace(/[%+\-\s]/g,''));
+  if(isNaN(n))return null;
+  // Signed: a leading "+" is a surcharge (negative slider); everything
+  // else — including a "-" or no sign — is read as a discount.
+  const v=c.signed?(text.trim()[0]==='+'?-Math.abs(n):Math.abs(n)):n;
+  return clamp(v,lo,hi);
 }
 
 /* onRecalc refreshes everything; onQuote refreshes the quote panel only
-   (matrix/rate card don't depend on these controls except margin). */
+   (the matrix & rate card depend on these controls only through margin). */
 export function initControls({onRecalc,onQuote}){
-  $('marginSl').addEventListener('input',function(){$('marginOut').value=this.value+'%';onRecalc();});
-  $('discSl').addEventListener('input',function(){$('discOut').value=discFmt(parseInt(this.value));onQuote();});
-  [['contSl','contOut'],['commSl','commOut'],['vatSl','vatOut']].forEach(([s,o])=>
-    $(s).addEventListener('input',function(){$(o).value=this.value+'%';onQuote();}));
-  [['saasSl','saasOut'],['travSl','travOut']].forEach(([s,o])=>
-    $(s).addEventListener('input',function(){$(o).value='$'+parseInt(this.value).toLocaleString();onQuote();}));
-  setupPctInp('marginOut','marginSl',5,60,v=>v+'%',onRecalc);
-  setupPctInp('discOut','discSl',-25,25,discFmt,onRecalc);
-  setupPctInp('contOut','contSl',0,25,v=>v+'%',onRecalc);
-  setupPctInp('commOut','commSl',0,20,v=>v+'%',onRecalc);
-  setupPctInp('vatOut','vatSl',0,30,v=>v+'%',onRecalc);
-  setupDollarInp('saasOut','saasSl',0,100000,1000,onRecalc);
-  setupDollarInp('travOut','travSl',0,50000,500,onRecalc);
+  for(const c of CONTROLS){
+    const sl=$(c.sl),out=$(c.out),fmt=fmtOf(c),commit=c.wide?onRecalc:onQuote;
+    sl.addEventListener('input',()=>{out.value=fmt(parseFloat(sl.value)||0);commit();});
+    out.addEventListener('change',()=>{
+      const v=parseInput(c,out.value);
+      if(v===null)return;
+      sl.value=v;
+      out.value=fmt(v);
+      commit();
+    });
+    out.addEventListener('keydown',e=>{if(e.key==='Enter')out.blur();});
+  }
 }
