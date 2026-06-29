@@ -23,6 +23,12 @@
   }
 })();
 </script>
+<script>
+// Apply saved (or system-preferred) theme before first paint to avoid a flash.
+(function(){try{var s=localStorage.getItem("kp-theme");
+  var d=s?s==="dark":(window.matchMedia&&window.matchMedia("(prefers-color-scheme:dark)").matches);
+  if(d)document.documentElement.classList.add("dark");}catch(e){}})();
+</script>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>KNEURAPRICE</title>
 <link rel="icon" href="favicon.ico" sizes="48x48">
@@ -240,6 +246,8 @@
   </section>
 
 </main>
+
+<button class="theme-tgl" id="themeTgl" type="button" aria-label="Toggle dark mode" title="Toggle dark / light">☾</button>
 
 <div class="pagedots">
   <button class="pagedot active" data-goto="0" title="01 Instructions"></button>

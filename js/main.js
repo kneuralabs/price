@@ -4,6 +4,7 @@ import {buildRateCard,updateBlended} from './ratecard.js';
 import {buildMatrix,updateMatrix} from './matrix.js';
 import {buildQuoteRows,updateQBRows,updateQuote,exportQuote} from './quote.js';
 import {initNav} from './nav.js';
+import {initTheme} from './theme.js';
 import {$} from './util.js';
 
 function refreshQuote(){updateQuote(quoteCalc(readControls()));}
@@ -18,6 +19,7 @@ function recalc(){
 function rebuild(){buildMatrix(recalc);recalc();}
 
 initNav();
+initTheme();
 buildRateCard({onValue:recalc,onStructure:rebuild});
 buildMatrix(recalc);
 buildQuoteRows(recalc);
