@@ -1,54 +1,57 @@
 import {ROLES,MODS} from './data.js';
 import {state,selCols} from './state.js';
 import {moduleTotals} from './calc.js';
-import {$,money,moneyK,hours} from './util.js';
+import {$,esc,money,moneyK,hours} from './util.js';
 
 /* Page 04: quote builder rows, summary panel, breakdown, export. */
 
 export function buildQuoteRows(onToggle){
-  const tb=$('qbBody');
+  const body=$('qbBody');
   MODS.forEach((m,i)=>{
-    const tr=document.createElement('tr');
-    tr.className='qr'+(state.active.has(i)?'':' off');
-    tr.innerHTML=`<td class="qm-check-cell"><div class="toggle${state.active.has(i)?' on':''}"></div></td>
-      <td><div class="qm-id">${m.id}</div></td>
-      <td><div class="qm-name">${m.name}</div></td>
-      <td class="qm-r qm-hrs hs" id="qH${i}">—</td>
-      <td class="qm-r qm-cost hs" id="qC${i}">—</td>
-      <td class="qm-r qm-fee" id="qF${i}">—</td>`;
-    tr.addEventListener('click',()=>{
+    const on=state.active.has(i);
+    const {c}=moduleTotals(i);
+    const row=document.createElement('div');
+    row.className='qb-row'+(on?'':' off');
+    row.innerHTML=`
+      <span class="qb-switch"><span class="qb-knob"></span></span>
+      <div>
+        <div class="qb-name">${esc(m.name)}</div>
+        <div class="qb-sub" id="qSub${i}">${esc(m.id)} · ${money(c)} cost</div>
+      </div>
+      <span class="qb-hrs" id="qH${i}">—</span>
+      <span class="qb-fee" id="qF${i}">—</span>`;
+    row.addEventListener('click',()=>{
       state.active.has(i)?state.active.delete(i):state.active.add(i);
-      tr.classList.toggle('off',!state.active.has(i));
-      tr.querySelector('.toggle').classList.toggle('on',state.active.has(i));
+      row.classList.toggle('off',!state.active.has(i));
       onToggle();
     });
-    tb.appendChild(tr);
+    body.appendChild(row);
   });
 }
 
 export function updateQBRows(mg){
-  MODS.forEach((_,i)=>{
+  MODS.forEach((m,i)=>{
     const {h:mH,c:mC}=moduleTotals(i);
+    $('qSub'+i).textContent=`${m.id} · ${money(mC)} cost`;
     $('qH'+i).textContent=hours(mH);
-    $('qC'+i).textContent=money(mC);
     $('qF'+i).textContent=money(mC/(1-mg));
   });
 }
 
 export function updateQuote(q){
   $('qbSum').innerHTML=`
-    <div class="sum-card"><span class="sum-val">${state.active.size}</span><div class="sum-lbl">Modules</div></div>
-    <div class="sum-card"><span class="sum-val">${Math.round(q.tH).toLocaleString()}</span><div class="sum-lbl">Hours</div></div>
-    <div class="sum-card"><span class="sum-val">${moneyK(q.tC)}</span><div class="sum-lbl">Int. Cost</div></div>
-    <div class="sum-card"><span class="sum-val">$${q.eff.toFixed(0)}</span><div class="sum-lbl">Eff. $/hr</div></div>`;
+    <div class="sumcard"><div class="sumcard-val">${state.active.size}</div><div class="sumcard-lbl">Modules</div></div>
+    <div class="sumcard"><div class="sumcard-val">${Math.round(q.tH).toLocaleString()}</div><div class="sumcard-lbl">Hours</div></div>
+    <div class="sumcard"><div class="sumcard-val">${moneyK(q.tC)}</div><div class="sumcard-lbl">Int. Cost</div></div>
+    <div class="sumcard"><div class="sumcard-val">$${q.eff.toFixed(0)}</div><div class="sumcard-lbl">Eff. $/hr</div></div>`;
   $('qbBreak').innerHTML=
-    selCols().map(j=>q.rC[j]?`<div class="br-row"><span class="br-role">${ROLES[j].abbr} · $${state.rates[j]}/hr</span><span class="br-val">${money(q.rC[j])}</span></div>`:'').join('')+
-    `<div class="br-sep"></div><div class="br-tot"><span class="br-tot-lbl">Internal cost</span><span class="br-tot-val">${money(q.tC)}</span></div>`+
-    (q.contAmt?`<div class="br-row"><span class="br-role">Contingency</span><span class="br-val">${money(q.contAmt)}</span></div>`:'')+
-    (q.saas?`<div class="br-row"><span class="br-role">SaaS subs</span><span class="br-val">${money(q.saas)}</span></div>`:'')+
-    (q.trav?`<div class="br-row"><span class="br-role">Travel</span><span class="br-val">${money(q.trav)}</span></div>`:'')+
-    (q.commAmt?`<div class="br-row"><span class="br-role">Sales comm.</span><span class="br-val">${money(q.commAmt)}</span></div>`:'')+
-    (q.vatAmt?`<div class="br-row"><span class="br-role">VAT/GST</span><span class="br-val">${money(q.vatAmt)}</span></div>`:'');
+    selCols().map(j=>q.rC[j]?`<div class="byrole-row"><span class="k">${esc(ROLES[j].abbr)} · $${state.rates[j]}/hr</span><span class="v">${money(q.rC[j])}</span></div>`:'').join('')+
+    `<div class="byrole-sep"></div><div class="byrole-tot"><span>Internal cost</span><span>${money(q.tC)}</span></div>`+
+    (q.contAmt?`<div class="byrole-extra"><span>Contingency</span><span>${money(q.contAmt)}</span></div>`:'')+
+    (q.saas?`<div class="byrole-extra"><span>SaaS subs</span><span>${money(q.saas)}</span></div>`:'')+
+    (q.trav?`<div class="byrole-extra"><span>Travel</span><span>${money(q.trav)}</span></div>`:'')+
+    (q.commAmt?`<div class="byrole-extra"><span>Sales comm.</span><span>${money(q.commAmt)}</span></div>`:'')+
+    (q.vatAmt?`<div class="byrole-extra"><span>VAT/GST</span><span>${money(q.vatAmt)}</span></div>`:'');
   $('finalPrice').textContent=money(q.adj);
   $('finalSub').innerHTML=`
     <span>Margin <strong>${(q.mg*100).toFixed(0)}%</strong></span>

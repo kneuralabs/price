@@ -27,7 +27,7 @@ const CONTROLS=[
 
 const clamp=(v,lo,hi)=>Math.max(lo,Math.min(hi,v));
 const fmtPct=v=>v+'%';
-const fmtSigned=v=>(v>0?'-':v<0?'+':'')+Math.abs(v)+'%';
+const fmtSigned=v=>(v>0?'−':v<0?'+':'')+Math.abs(v)+'%';
 const fmtMoney=v=>'$'+v.toLocaleString();
 const fmtOf=c=>c.signed?fmtSigned:c.kind==='money'?fmtMoney:fmtPct;
 
@@ -55,7 +55,7 @@ function parseInput(c,text){
     const step=parseFloat(sl.step)||1;
     return clamp(Math.round(v/step)*step,lo,hi);
   }
-  const n=parseFloat(text.replace(/[%+\-\s]/g,''));
+  const n=parseFloat(text.replace(/[%+−\-\s]/g,''));
   if(isNaN(n))return null;
   // Signed: a leading "+" is a surcharge (negative slider); everything
   // else — including a "-" or no sign — is read as a discount.
