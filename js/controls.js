@@ -1,4 +1,4 @@
-import {$} from './util.js';
+import {$,money} from './util.js';
 
 /* Quote Builder control panel — declarative.
 
@@ -28,8 +28,7 @@ const CONTROLS=[
 const clamp=(v,lo,hi)=>Math.max(lo,Math.min(hi,v));
 const fmtPct=v=>v+'%';
 const fmtSigned=v=>(v>0?'−':v<0?'+':'')+Math.abs(v)+'%';
-const fmtMoney=v=>'$'+v.toLocaleString();
-const fmtOf=c=>c.signed?fmtSigned:c.kind==='money'?fmtMoney:fmtPct;
+const fmtOf=c=>c.signed?fmtSigned:c.kind==='money'?money:fmtPct;
 
 /* Current slider position → snapshot value (percentages are fractions). */
 const valueOf=c=>{
@@ -71,7 +70,7 @@ export function initControls({onRecalc,onQuote}){
     sl.addEventListener('input',()=>{out.value=fmt(parseFloat(sl.value)||0);commit();});
     out.addEventListener('change',()=>{
       const v=parseInput(c,out.value);
-      if(v===null)return;
+      if(v===null){out.value=fmt(parseFloat(sl.value)||0);return;}
       sl.value=v;
       out.value=fmt(v);
       commit();

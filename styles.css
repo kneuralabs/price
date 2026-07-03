@@ -202,6 +202,7 @@ a{color:inherit}
 .qb-list-head .r{text-align:right}
 .qb-row{display:grid;grid-template-columns:40px 1fr 70px 90px;align-items:center;padding:13px 18px;
   border-top:1px solid var(--line2);cursor:pointer}
+.qb-row:focus-visible{outline:2px solid var(--ac);outline-offset:-2px}
 .qb-row.off{opacity:.4}
 .qb-switch{width:26px;height:15px;border-radius:999px;background:var(--ac);position:relative;transition:background .2s}
 .qb-row.off .qb-switch{background:var(--line3)}
