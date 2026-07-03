@@ -25,6 +25,11 @@ export function blendedRate(cols){
   return cols.length?cols.reduce((a,j)=>a+state.rates[j],0)/cols.length:0;
 }
 
+/* Margin is a share of the fee, not a markup on cost: fee×(1−mg)=cost. */
+export function feeFromCost(cost,mg){
+  return cost/(1-mg);
+}
+
 export function quoteCalc(ctl){
   const {mg,dc,cont,comm,vat,saas,trav}=ctl;
   let tH=0,tC=0;
@@ -33,7 +38,7 @@ export function quoteCalc(ctl){
     const h=state.hrs[i][j]*state.fte[j],c=h*state.rates[j];
     tH+=h;tC+=c;rC[j]+=c;
   }));
-  const fee=tC/(1-mg);
+  const fee=feeFromCost(tC,mg);
   const contAmt=fee*cont;
   const sub=fee+contAmt+saas+trav;
   const afterDisc=sub*(1-dc);

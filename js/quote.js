@@ -1,6 +1,6 @@
 import {ROLES,MODS} from './data.js';
-import {state,selCols} from './state.js';
-import {moduleTotals} from './calc.js';
+import {state,selCols,activeMods} from './state.js';
+import {moduleTotals,feeFromCost} from './calc.js';
 import {$,esc,money,moneyK,hours} from './util.js';
 
 /* Page 04: quote builder rows, summary panel, breakdown, export. */
@@ -12,6 +12,10 @@ export function buildQuoteRows(onToggle){
     const {c}=moduleTotals(i);
     const row=document.createElement('div');
     row.className='qb-row'+(on?'':' off');
+    row.setAttribute('role','switch');
+    row.setAttribute('tabindex','0');
+    row.setAttribute('aria-checked',on);
+    row.setAttribute('aria-label',`Include ${m.name}`);
     row.innerHTML=`
       <span class="qb-switch"><span class="qb-knob"></span></span>
       <div>
@@ -20,10 +24,16 @@ export function buildQuoteRows(onToggle){
       </div>
       <span class="qb-hrs" id="qH${i}">—</span>
       <span class="qb-fee" id="qF${i}">—</span>`;
-    row.addEventListener('click',()=>{
-      state.active.has(i)?state.active.delete(i):state.active.add(i);
-      row.classList.toggle('off',!state.active.has(i));
+    const toggle=()=>{
+      const now=!state.active.has(i);
+      now?state.active.add(i):state.active.delete(i);
+      row.classList.toggle('off',!now);
+      row.setAttribute('aria-checked',now);
       onToggle();
+    };
+    row.addEventListener('click',toggle);
+    row.addEventListener('keydown',e=>{
+      if(e.key===' '||e.key==='Enter'){e.preventDefault();toggle();}
     });
     body.appendChild(row);
   });
@@ -34,7 +44,7 @@ export function updateQBRows(mg){
     const {h:mH,c:mC}=moduleTotals(i);
     $('qSub'+i).textContent=`${m.id} · ${money(mC)} cost`;
     $('qH'+i).textContent=hours(mH);
-    $('qF'+i).textContent=money(mC/(1-mg));
+    $('qF'+i).textContent=money(feeFromCost(mC,mg));
   });
 }
 
@@ -64,7 +74,7 @@ export function exportQuote(q){
   const lines=['KNEURAPRICE — Custom Quote','='.repeat(52),'','RATE CARD (selected roles)'];
   selCols().forEach(j=>lines.push(`  ${ROLES[j].abbr.padEnd(4)} ${ROLES[j].name.padEnd(34)} $${state.rates[j]}/hr  FTE ${state.fte[j]}`));
   lines.push('','SELECTED MODULES');
-  state.active.forEach(i=>{
+  activeMods().forEach(i=>{
     const {h:mH,c:mC}=moduleTotals(i);
     lines.push(`  ${MODS[i].id.padEnd(5)} ${MODS[i].name.padEnd(44)} ${String(Math.round(mH)+'h').padStart(6)}  $${Math.round(mC).toLocaleString()}`);
   });

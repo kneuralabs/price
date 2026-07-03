@@ -1,6 +1,6 @@
 import {ROLES,MODS} from './data.js';
 import {state,selCols} from './state.js';
-import {moduleTotals,roleTotals} from './calc.js';
+import {moduleTotals,roleTotals,feeFromCost} from './calc.js';
 import {$,esc,money,moneyK,hours} from './util.js';
 
 /* Page 03: effort matrix. Rebuilt whenever roles/names change so the
@@ -37,7 +37,7 @@ export function updateMatrix(mg){
     gH+=mH;gC+=mC;
     $('mH'+i).textContent=hours(mH);
     $('mC'+i).textContent=money(mC);
-    $('mF'+i).textContent=money(mC/(1-mg));
+    $('mF'+i).textContent=money(feeFromCost(mC,mg));
   });
   state.selRoles.forEach(j=>{
     const {h:cH,c:cC}=roleTotals(j);
@@ -46,5 +46,5 @@ export function updateMatrix(mg){
   });
   $('gH').textContent=hours(gH);
   $('gC').textContent=money(gC);
-  $('gF').textContent=money(gC/(1-mg));
+  $('gF').textContent=money(feeFromCost(gC,mg));
 }
